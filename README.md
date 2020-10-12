@@ -37,25 +37,14 @@ function from package `lme4`) to fit the models. Then we used `anova`
 from package `lme4` to compute likelihood ratio tests.
 
 ``` r
-library(lme4)
-#> Loading required package: Matrix
-
-`pred_no_effect` <- glmer.nb(abundance_predators~ 1 + (1|ID), data = treatments)
-`pred_survey` <- glmer.nb(abundance_predators~(survey) + (1|ID), data = treatments)
-`pred_fish` <- glmer.nb(abundance_predators~(survey+fish) + (1|ID), data = treatments)
-`pred_isolation` <- glmer.nb(abundance_predators~(survey+fish+isolation) + (1|ID), data = treatments)
-`pred_survey:fish` <- glmer.nb(abundance_predators~(survey + fish + isolation + survey:fish) + (1|ID), data = treatments)
-`pred_survey:isolation` <- glmer.nb(abundance_predators~(survey + fish + isolation + survey:fish + survey:isolation) + (1|ID), data = treatments)
-#> Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
-#> Model failed to converge with max|grad| = 0.00310812 (tol = 0.002, component 1)
-`pred_fish:isolation` <- glmer.nb(abundance_predators~(survey + fish + isolation + survey:fish + survey:isolation + fish:isolation) + (1|ID), data = treatments)
-#> Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
-#> Model failed to converge with max|grad| = 0.00306248 (tol = 0.002, component 1)
-#> Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
-#> Model failed to converge with max|grad| = 0.00205184 (tol = 0.002, component 1)
-`pred_survey:fish:isolation` <- glmer.nb(abundance_predators~(survey + fish + isolation + survey:fish + survey:isolation + fish:isolation + survey:fish:isolation) + (1|ID), data = treatments)
-#> Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
-#> Model failed to converge with max|grad| = 0.00443955 (tol = 0.002, component 1)
+`pred_no_effect` <- glmer.nb(abundance_predators~ 1 + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`pred_survey` <- glmer.nb(abundance_predators~(survey) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`pred_fish` <- glmer.nb(abundance_predators~(survey+fish) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`pred_isolation` <- glmer.nb(abundance_predators~(survey+fish+isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`pred_survey:fish` <- glmer.nb(abundance_predators~(survey + fish + isolation + survey:fish) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`pred_survey:isolation` <- glmer.nb(abundance_predators~(survey + fish + isolation + survey:fish + survey:isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`pred_fish:isolation` <- glmer.nb(abundance_predators~(survey + fish + isolation + survey:fish + survey:isolation + fish:isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`pred_survey:fish:isolation` <- glmer.nb(abundance_predators~(survey + fish + isolation + survey:fish + survey:isolation + fish:isolation + survey:fish:isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
 
 Anova_predators <- anova(`pred_no_effect`, 
       `pred_survey`,
@@ -112,7 +101,7 @@ interactions.
 
 ``` r
 library(emmeans)
-emmeans(`pred_survey:fish:isolation`, list(pairwise ~ survey), adjust = "tukey") 
+emmeans(`pred_survey:fish:isolation`, list(pairwise ~ survey), adjust = "sidak") 
 #> NOTE: Results may be misleading due to involvement in interactions
 #> $`emmeans of survey`
 #>  survey emmean    SE  df asymp.LCL asymp.UCL
@@ -127,14 +116,14 @@ emmeans(`pred_survey:fish:isolation`, list(pairwise ~ survey), adjust = "tukey")
 #> 
 #> $`pairwise differences of survey`
 #>  contrast estimate    SE  df z.ratio p.value
-#>  1 - 2      -1.460 0.147 Inf  -9.948 <.0001 
+#>  1 - 2      -1.460 0.147 Inf  -9.949 <.0001 
 #>  1 - 3      -1.721 0.154 Inf -11.145 <.0001 
-#>  2 - 3      -0.261 0.119 Inf  -2.194 0.0722 
+#>  2 - 3      -0.261 0.119 Inf  -2.194 0.0824 
 #> 
 #> Results are averaged over the levels of: fish, isolation 
 #> Results are given on the log (not the response) scale. 
-#> P value adjustment: tukey method for comparing a family of 3 estimates
-emmeans(`pred_survey:fish:isolation`, list(pairwise ~ isolation), adjust = "tukey") 
+#> P value adjustment: sidak method for 3 tests
+emmeans(`pred_survey:fish:isolation`, list(pairwise ~ isolation), adjust = "sidak") 
 #> NOTE: Results may be misleading due to involvement in interactions
 #> $`emmeans of isolation`
 #>  isolation emmean    SE  df asymp.LCL asymp.UCL
@@ -151,24 +140,24 @@ emmeans(`pred_survey:fish:isolation`, list(pairwise ~ isolation), adjust = "tuke
 #>  contrast  estimate    SE  df z.ratio p.value
 #>  30 - 120     0.791 0.213 Inf 3.706   0.0006 
 #>  30 - 480     1.330 0.228 Inf 5.831   <.0001 
-#>  120 - 480    0.539 0.234 Inf 2.303   0.0554 
+#>  120 - 480    0.539 0.234 Inf 2.303   0.0625 
 #> 
 #> Results are averaged over the levels of: survey, fish 
 #> Results are given on the log (not the response) scale. 
-#> P value adjustment: tukey method for comparing a family of 3 estimates
+#> P value adjustment: sidak method for 3 tests
 ```
 
 Same thing now for herbivores and detritivores.
 
 ``` r
-`cons_no_effect` <- glmer.nb(abundance_consumers~ 1 + (1|ID), data = treatments)
-`cons_survey` <- glmer.nb(abundance_consumers~(survey) + (1|ID), data = treatments)
-`cons_fish` <- glmer.nb(abundance_consumers~(survey+fish) + (1|ID), data = treatments)
-`cons_isolation` <- glmer.nb(abundance_consumers~(survey+fish+isolation) + (1|ID), data = treatments)
-`cons_survey:fish` <- glmer.nb(abundance_consumers~(survey + fish + isolation + survey:fish) + (1|ID), data = treatments)
-`cons_survey:isolation` <- glmer.nb(abundance_consumers~(survey + fish + isolation + survey:fish + survey:isolation) + (1|ID), data = treatments)
-`cons_fish:isolation` <- glmer.nb(abundance_consumers~(survey + fish + isolation + survey:fish + survey:isolation + fish:isolation) + (1|ID), data = treatments)
-`cons_survey:fish:isolation` <- glmer.nb(abundance_consumers~(survey + fish + isolation + survey:fish + survey:isolation + fish:isolation + survey:fish:isolation) + (1|ID), data = treatments)
+`cons_no_effect` <- glmer.nb(abundance_consumers~ 1 + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`cons_survey` <- glmer.nb(abundance_consumers~(survey) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`cons_fish` <- glmer.nb(abundance_consumers~(survey+fish) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`cons_isolation` <- glmer.nb(abundance_consumers~(survey+fish+isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`cons_survey:fish` <- glmer.nb(abundance_consumers~(survey + fish + isolation + survey:fish) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`cons_survey:isolation` <- glmer.nb(abundance_consumers~(survey + fish + isolation + survey:fish + survey:isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`cons_fish:isolation` <- glmer.nb(abundance_consumers~(survey + fish + isolation + survey:fish + survey:isolation + fish:isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`cons_survey:fish:isolation` <- glmer.nb(abundance_consumers~(survey + fish + isolation + survey:fish + survey:isolation + fish:isolation + survey:fish:isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
 
 Anova_consumers <- anova(`cons_no_effect`, 
       `cons_survey`,
@@ -201,8 +190,8 @@ Anova_consumers
 #> cons_isolation                8 780.63 798.39 -382.32   764.63  2.5255  2
 #> cons_survey:fish             10 781.80 804.00 -380.90   761.80  2.8277  2
 #> cons_survey:isolation        14 778.60 809.67 -375.30   750.60 11.2050  4
-#> cons_fish:isolation          16 776.49 812.00 -372.25   744.49  6.1092  2
-#> cons_survey:fish:isolation   20 780.85 825.24 -370.42   740.85  3.6439  4
+#> cons_fish:isolation          16 776.49 812.00 -372.24   744.49  6.1095  2
+#> cons_survey:fish:isolation   20 780.85 825.24 -370.42   740.85  3.6436  4
 #>                            Pr(>Chisq)    
 #> cons_no_effect                           
 #> cons_survey                 5.259e-16 ***
@@ -210,8 +199,8 @@ Anova_consumers
 #> cons_isolation                0.28287    
 #> cons_survey:fish              0.24321    
 #> cons_survey:isolation         0.02435 *  
-#> cons_fish:isolation           0.04714 *  
-#> cons_survey:fish:isolation    0.45634    
+#> cons_fish:isolation           0.04713 *  
+#> cons_survey:fish:isolation    0.45638    
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -221,7 +210,7 @@ sampling survey, and interaction between isolation and survey, and
 between isolation and presence of fish:
 
 ``` r
-emmeans(`cons_survey:fish:isolation`, list(pairwise ~ survey), adjust = "tukey") 
+emmeans(`cons_survey:fish:isolation`, list(pairwise ~ survey), adjust = "sidak") 
 #> NOTE: Results may be misleading due to involvement in interactions
 #> $`emmeans of survey`
 #>  survey emmean    SE  df asymp.LCL asymp.UCL
@@ -242,8 +231,8 @@ emmeans(`cons_survey:fish:isolation`, list(pairwise ~ survey), adjust = "tukey")
 #> 
 #> Results are averaged over the levels of: fish, isolation 
 #> Results are given on the log (not the response) scale. 
-#> P value adjustment: tukey method for comparing a family of 3 estimates
-emmeans(`cons_survey:fish:isolation`, list(pairwise ~ isolation|fish), adjust = "tukey") 
+#> P value adjustment: sidak method for 3 tests
+emmeans(`cons_survey:fish:isolation`, list(pairwise ~ isolation|fish), adjust = "sidak") 
 #> NOTE: Results may be misleading due to involvement in interactions
 #> $`emmeans of isolation | fish`
 #> fish = absent:
@@ -267,19 +256,19 @@ emmeans(`cons_survey:fish:isolation`, list(pairwise ~ isolation|fish), adjust = 
 #> fish = absent:
 #>  contrast  estimate    SE  df z.ratio p.value
 #>  30 - 120   -1.0089 0.293 Inf -3.444  0.0017 
-#>  30 - 480   -0.7346 0.301 Inf -2.443  0.0387 
-#>  120 - 480   0.2743 0.300 Inf  0.916  0.6304 
+#>  30 - 480   -0.7347 0.301 Inf -2.443  0.0431 
+#>  120 - 480   0.2743 0.300 Inf  0.916  0.7377 
 #> 
 #> fish = present:
 #>  contrast  estimate    SE  df z.ratio p.value
-#>  30 - 120    0.2794 0.306 Inf  0.912  0.6326 
-#>  30 - 480    0.0674 0.312 Inf  0.216  0.9745 
-#>  120 - 480  -0.2120 0.312 Inf -0.679  0.7756 
+#>  30 - 120    0.2794 0.306 Inf  0.912  0.7399 
+#>  30 - 480    0.0674 0.312 Inf  0.216  0.9950 
+#>  120 - 480  -0.2120 0.312 Inf -0.679  0.8727 
 #> 
 #> Results are averaged over the levels of: survey 
 #> Results are given on the log (not the response) scale. 
-#> P value adjustment: tukey method for comparing a family of 3 estimates
-emmeans(`cons_survey:fish:isolation`, list(pairwise ~ isolation|survey), adjust = "tukey") 
+#> P value adjustment: sidak method for 3 tests
+emmeans(`cons_survey:fish:isolation`, list(pairwise ~ isolation|survey), adjust = "sidak") 
 #> NOTE: Results may be misleading due to involvement in interactions
 #> $`emmeans of isolation | survey`
 #> survey = 1:
@@ -308,23 +297,23 @@ emmeans(`cons_survey:fish:isolation`, list(pairwise ~ isolation|survey), adjust 
 #> $`pairwise differences of isolation | survey`
 #> survey = 1:
 #>  contrast  estimate    SE  df z.ratio p.value
-#>  30 - 120    -0.759 0.356 Inf -2.133  0.0832 
-#>  30 - 480    -0.153 0.360 Inf -0.426  0.9049 
-#>  120 - 480    0.605 0.352 Inf  1.721  0.1973 
+#>  30 - 120    -0.759 0.356 Inf -2.133  0.0955 
+#>  30 - 480    -0.153 0.360 Inf -0.426  0.9642 
+#>  120 - 480    0.605 0.352 Inf  1.721  0.2346 
 #> 
 #> survey = 2:
 #>  contrast  estimate    SE  df z.ratio p.value
-#>  30 - 120    -0.021 0.346 Inf -0.061  0.9980 
-#>  30 - 480     0.216 0.340 Inf  0.635  0.8008 
-#>  120 - 480    0.237 0.346 Inf  0.684  0.7728 
+#>  30 - 120    -0.021 0.346 Inf -0.061  0.9999 
+#>  30 - 480     0.216 0.340 Inf  0.635  0.8931 
+#>  120 - 480    0.237 0.346 Inf  0.684  0.8704 
 #> 
 #> survey = 3:
 #>  contrast  estimate    SE  df z.ratio p.value
-#>  30 - 120    -0.315 0.374 Inf -0.843  0.6764 
-#>  30 - 480    -1.064 0.409 Inf -2.600  0.0252 
-#>  120 - 480   -0.749 0.388 Inf -1.931  0.1301 
+#>  30 - 120    -0.315 0.373 Inf -0.843  0.7833 
+#>  30 - 480    -1.064 0.409 Inf -2.600  0.0277 
+#>  120 - 480   -0.749 0.388 Inf -1.931  0.1521 
 #> 
 #> Results are averaged over the levels of: fish 
 #> Results are given on the log (not the response) scale. 
-#> P value adjustment: tukey method for comparing a family of 3 estimates
+#> P value adjustment: sidak method for 3 tests
 ```

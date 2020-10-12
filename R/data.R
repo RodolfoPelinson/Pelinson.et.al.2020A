@@ -69,12 +69,23 @@
 #' @source {Experimental Data}
 "ID"
 
+#' Sampling Survey identities
+#'
+#' @format Factor w/ 3 levels: "1","2","3", and 68 observations
+#' @source {Experimental Data}
+"survey"
+
+#' Isolation Treatment identities for all Surveys
+#'
+#' @format Factor w/ 3 levels: "30","120","480", and 68 observations
+#' @source {Experimental Data}
+"isolation"
+
 #' Isolation Treatment identities in the First Survey
 #'
 #' @format Factor w/ 3 levels: "30","120","480", and 24 observations
 #' @source {Experimental Data}
 "isolation_SS1"
-
 
 
 #' Isolation Treatment identities in the Second Survey
@@ -89,6 +100,11 @@
 #' @source {Experimental Data}
 "isolation_SS3"
 
+#' Fish Treatment identities for all Surveys
+#'
+#' @format Factor w/ 2 levels: "absent","present", and 68 observations
+#' @source {Experimental Data}
+"fish"
 
 #' Fish Treatment identities in the First Survey
 #'

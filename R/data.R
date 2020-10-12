@@ -20,6 +20,8 @@
 "com"
 
 
+
+
 #' Explanatory variables
 #'
 #' A dataset containing the explanatary variables for the experiment.
@@ -61,11 +63,19 @@
 #' @source {Experimental Data}
 "TRAITS"
 
+#' Pond IDs for all surveys
+#'
+#' @format Factor w/ 24 levels and 68 observations
+#' @source {Experimental Data}
+"ID"
+
 #' Isolation Treatment identities in the First Survey
 #'
 #' @format Factor w/ 3 levels: "30","120","480", and 24 observations
 #' @source {Experimental Data}
 "isolation_SS1"
+
+
 
 #' Isolation Treatment identities in the Second Survey
 #'

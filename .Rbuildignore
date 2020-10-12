@@ -1,3 +1,5 @@
+^renv$
+^renv\.lock$
 ^pelinson\.et\.al\.2020\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$

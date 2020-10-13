@@ -3,3 +3,9 @@ pelinson.et.al.2020
 Matrix
 lme4
 emmeans
+permute
+lattice
+vegan
+mvabund
+TMB
+gllvm

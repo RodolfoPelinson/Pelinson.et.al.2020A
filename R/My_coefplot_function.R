@@ -49,13 +49,13 @@ My_coefplot <- function (mles, upper, lower, species_labels = NULL, xlab = NULL,
        ylab = "", xlab = xlab, xlim = c(min(lower), max(upper)), ...)
 
   if(isTRUE(rect)){
-    rect(xleft = min(lower)-1, ybottom = 0, xright =  max(upper)+1, ytop = max(At.y)-rect_lim+0.5, density = NULL, border = "transparent", col = rgb(col2rgb("cornflowerblue", alpha = FALSE)[1],
-                                                                                                                                                     col2rgb("cornflowerblue", alpha = FALSE)[2],
-                                                                                                                                                     col2rgb("cornflowerblue", alpha = FALSE)[3],
+    rect(xleft = min(lower)-1, ybottom = 0, xright =  max(upper)+1, ytop = max(At.y)-rect_lim+0.5, density = NULL, border = "transparent", col = rgb(col2rgb("forestgreen", alpha = FALSE)[1],
+                                                                                                                                                     col2rgb("forestgreen", alpha = FALSE)[2],
+                                                                                                                                                     col2rgb("forestgreen", alpha = FALSE)[3],
                                                                                                                                                      alpha = 40, maxColorValue = 255))
-    rect(xleft = min(lower)-1, ybottom = max(At.y)-rect_lim+0.5, xright =  max(upper)+1, ytop = max(At.y)+1, density = NULL, border = "transparent", col = rgb(col2rgb("coral3", alpha = FALSE)[1],
-                                                                                                                                                               col2rgb("coral3", alpha = FALSE)[2],
-                                                                                                                                                               col2rgb("coral3", alpha = FALSE)[3],
+    rect(xleft = min(lower)-1, ybottom = max(At.y)-rect_lim+0.5, xright =  max(upper)+1, ytop = max(At.y)+1, density = NULL, border = "transparent", col = rgb(col2rgb("gold3", alpha = FALSE)[1],
+                                                                                                                                                               col2rgb("gold3", alpha = FALSE)[2],
+                                                                                                                                                               col2rgb("gold3", alpha = FALSE)[3],
                                                                                                                                                                alpha = 40, maxColorValue = 255))
   }
 

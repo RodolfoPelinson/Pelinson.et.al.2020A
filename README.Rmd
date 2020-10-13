@@ -22,20 +22,48 @@ The goal of pelinson.et.al.2020 is to walk the user through the statistical anal
 
 ## Installation
 
-You can install the released version of pelinson.et.al.2020 from [GitHub](https://github.com/RodolfoPelinson/pelinson.et.al.2020) with:
+You can install the last version of `pelinson.et.al.2020` package from my  [GitHub](https://github.com/RodolfoPelinson/pelinson.et.al.2020) with:
 
 
-
-``` {r installing package, eval = T}
+``` {r installing package, eval = T, results = "hide"}
 #install.packages("devtools")
 #devtools::install_github("RodolfoPelinson/pelinson.et.al.2020")
 library(pelinson.et.al.2020)
 
 ```
+
+Other packages used here are:
+`vegan` version 2.5-6  
+`lme4` version 1.1-23  
+`emmeans` version 1.4.8  
+`mvabund` version 4.1.3  
+`gllvm` version 1.2.2  
+`permute` version 0.9-5  
+
+``` {r installing packages2, eval = T, results = "hide", warning = F, message = F}
+library(vegan)
+library(permute)
+library(mvabund)
+library(gllvm)
+library(lme4)
+```
+
+
 This will give you access to all the data and functions used to produce the results shown in "Pelinson et al 2020. Top predator introduction changes the effects of spatial isolation on freshwater community structure".
 
 
 ## Testing for differences in abundance
+
+First, lets load the necessary data.
+```{r loading data}
+data(abundance_predators)
+data(abundance_consumers)
+data(survey)
+data(fish)
+data(isolation)
+data(ID)
+```
+
 
 This is for testing for differences in the abundance of predatory insects across all treatments and sampling surveys. We used generalized linear mixed models with a negative binomial distribution (`glmer.nb` function from package `lme4`) to fit the models. Then we used `anova` from package `lme4` to compute likelihood ratio tests.
 
@@ -64,8 +92,7 @@ Anova_predators
 
 Now some *post-hoc* tests using function `emmeans` from package `emmeans` to identify pairwise differences for the effect of sampling survey and isolation, separately. *Post-hoc* tests were always applied to the most complex model to account for the effect of all possible interactions.
 
-```{r, cache = T}
-library(emmeans)
+```{r pairwise, cache = T}
 emmeans(`pred_survey:fish:isolation`, list(pairwise ~ survey), adjust = "sidak") 
 emmeans(`pred_survey:fish:isolation`, list(pairwise ~ isolation), adjust = "sidak") 
 ```
@@ -76,7 +103,7 @@ emmeans(`pred_survey:fish:isolation`, list(pairwise ~ isolation), adjust = "sida
 
 Same thing now for herbivores and detritivores.
 
-```{r anova_cons, cache=T}
+```{r anova non-predators, cache=T}
 `cons_no_effect` <- glmer.nb(abundance_consumers~ 1 + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
 `cons_survey` <- glmer.nb(abundance_consumers~(survey) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
 `cons_fish` <- glmer.nb(abundance_consumers~(survey+fish) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
@@ -102,10 +129,336 @@ Anova_consumers
 
 Now *post-hoc* tests to identify pairwise differences for the effect of sampling survey, and interaction between isolation and survey, and between isolation and presence of fish:
 
-```{r, cache = T}
+```{r pairwise non-predators, cache = T}
 emmeans(`cons_survey:fish:isolation`, list(pairwise ~ survey), adjust = "sidak") 
 emmeans(`cons_survey:fish:isolation`, list(pairwise ~ isolation|fish), adjust = "sidak") 
 emmeans(`cons_survey:fish:isolation`, list(pairwise ~ isolation|survey), adjust = "sidak") 
 
 ```
 
+
+## Testing for differences in community structure
+
+Loading necessary
+```{r loading community data}
+data(com,
+     com_SS1, fish_SS1,isolation_SS1, TRAITS_SS1, 
+     com_SS2, fish_SS2,isolation_SS2, TRAITS_SS2,
+     com_SS3, fish_SS3,isolation_SS3, TRAITS_SS3)
+```
+
+
+When we considered all surveys together, we had to exclude ponds that were missing in the third survey from the second and first surveys to achieve a balanced design. The balanced design was necessary for our permutation procedure, which accounted by the non-independence of ponds sampled in different moments in time. The permutation procedure below shuffles rows freely ponds freely within the same pond IDs, and then pond IDs freely across treatments.
+
+```{r permutation, eval = T, cache=T}
+com_incomplete <- com[which(ID != "A4" & ID != "B3" & ID != "C3" & ID != "C4"),]
+com_incomplete_oc <- decostand(com_incomplete, method = "pa")
+com_incomplete <- com_incomplete[,which(colSums(com_incomplete_oc) > 3)]
+isolation_incomplete <- isolation[which(ID != "A4" & ID != "B3" & ID != "C3" & ID != "C4")]
+fish_incomplete <- fish[which(ID != "A4" & ID != "B3" & ID != "C3" & ID != "C4")]
+survey_incomplete <- survey[which(ID != "A4" & ID != "B3" & ID != "C3" & ID != "C4")]
+ID_incomplete <- ID[which(ID != "A4" & ID != "B3" & ID != "C3" & ID != "C4")]
+ID_incomplete <- as.factor(as.character(ID_incomplete))
+
+
+set.seed(3)
+control <- permute::how(within = permute::Within(type = 'free'),
+               plots = Plots(strata = ID_incomplete, type = 'free'),
+               nperm = 10000)
+permutations <- shuffleSet(nrow(com_incomplete), control = control)
+```
+
+Now running the models.
+```{r mvabund models all surveys, cache = T, eval = T}
+
+com_incomplete_mvabund <- mvabund(com_incomplete)
+
+fit_no_effect <- manyglm(com_incomplete_mvabund ~ 1, family = "negative.binomial", cor.type = "I")
+fit_Time <- manyglm(com_incomplete_mvabund ~ survey_incomplete, family = "negative.binomial", cor.type = "I")
+fit_Time_fish <- manyglm(com_incomplete_mvabund ~ survey_incomplete + fish_incomplete, family = "negative.binomial", cor.type = "I")
+fit_Time_fish_isolation <- manyglm(com_incomplete_mvabund ~ survey_incomplete + fish_incomplete + isolation_incomplete, family = "negative.binomial", cor.type = "I")
+fit_Time_interaction <- manyglm(com_incomplete_mvabund ~ survey_incomplete + (fish_incomplete * isolation_incomplete), family = "negative.binomial", cor.type = "I")
+fit_incosistent_interaction <- manyglm(com_incomplete_mvabund ~ survey_incomplete * (fish_incomplete * isolation_incomplete), family = "negative.binomial", cor.type = "I")
+
+
+#Runing the Likelihood ratio tests
+anova_incomplete <- anova(fit_no_effect,
+                                  fit_Time,
+                                  fit_Time_fish,
+                                  fit_Time_fish_isolation,
+                                  fit_Time_interaction,
+                                  fit_incosistent_interaction, bootID = permutations ,  test = "LR", resamp = "pit.trap")
+anova_incomplete
+
+```
+
+
+Now, running models separately for each survey.
+
+### First Survey
+```{r mvabund models SS1, cache = T, eval = T}
+com_SS1_mvabund <- mvabund(com_SS1)
+
+fit_SS1_no_effect <- manyglm(com_SS1_mvabund ~  1, family = "negative.binomial")
+fit_SS1_fish <- manyglm(com_SS1_mvabund ~  fish_SS1, family = "negative.binomial")
+fit_SS1_isolation <- manyglm(com_SS1_mvabund ~  isolation_SS1, family = "negative.binomial")
+fit_SS1_interaction <- manyglm(com_SS1_mvabund ~  fish_SS1*isolation_SS1, family = "negative.binomial")
+
+set.seed(3);anova_SS1 <- anova(fit_SS1_interaction, nBoot = 10000,  p.uni  = "none", test = "LR")
+anova_SS1
+```
+
+Now, testing if the effect of treatments is mediated by trophic level:
+```{r mvabund models SS1 trait, cache = T, eval = T}
+env_SS1 <- data.frame(fish_SS1, isolation_SS1)
+
+fit_SS1_no_trait_interaction <- traitglm(L = com_SS1, R = env_SS1, Q = TRAITS_SS1, formula = ~ isolation_SS1 * fish_SS1, method = "manyglm", col.intercepts = T)
+fit_SS1_trait_pred_interaction <- traitglm(L = com_SS1, R = env_SS1, Q = TRAITS_SS1, formula = ~ (isolation_SS1:trophic) * (fish_SS1:trophic), method = "manyglm", col.intercepts = T)
+
+set.seed(3);anova_SS1_trait_interaction <- anova.traitglm(fit_SS1_no_trait_interaction,
+                                              fit_SS1_trait_pred_interaction,
+                                              nBoot = 10000, test = "LR", show.time = "none")
+anova_SS1_trait_interaction
+```
+
+Plotting the ordination. We performed a model based unconstrained ordination using function `gllvm` from package `gllvm` and the `plot_ordination` function from this package.
+```{r, fig.height=5, fig.width=5, dpi = 150}
+
+fit_gllvm_no_effect_SS1<- gllvm(com_SS1,family = "negative.binomial", method = "VA", row.eff = F,n.init = 50, seed = 3, num.lv = 2)
+
+
+colors_SS1 <- NULL
+for (i in 1:dim(TRAITS_SS1)[1]){
+  if(TRAITS_SS1$trophic[i] == "Pr"){colors_SS1[i] <- "gold3"}
+  else {colors_SS1[i] <- "forestgreen"}
+}
+
+new_names_SS1 <- rownames(fit_gllvm_no_effect_SS1$params$theta)
+for(i in 1:length(new_names_SS1)){ 
+  if(substring(new_names_SS1, 4,4)[i] == "_"){
+    new_names_SS1[i] <- substring(new_names_SS1[i], 5,7)
+  }
+  if(substring(new_names_SS1, 2,2)[i] == "_"){
+    new_names_SS1[i] <- substring(new_names_SS1[i], 3,5)
+  } else {new_names_SS1[i] <- substring(new_names_SS1[i], 1,3)}
+}
+
+plot_ordination(fit_gllvm_no_effect_SS1, x1 = fish_SS1, x2 = isolation_SS1,
+                species = T, elipse = T, sites = T,
+                site_colors = c("sienna1", "steelblue1","sienna3","steelblue3","sienna4", "steelblue4"),
+                legend = T, legend_labels = c("Fishless - 30 m", "Fishless - 120 m","Fishless - 480 m","Fish - 30 m", "Fish - 120 m","Fish - 480 m"),
+                legend_ncol = 2, legend_horiz = F,species_col = colors_SS1, species_names = new_names_SS1, main = "First Survey", species_size = TRAITS_SS1$volume_log, name_species_size = TRAITS_SS1$volume_log*0.21)
+```
+
+
+Plotting pairwise comparisons coefficients and confidence intervals for each species. There is a lot of code (I hope to improve it in the future!) to get the actual coefficients and their respective intervals. They are all in the file `coefs_for_plot.R`. We can call that file through the `source` function. You may have to download the file manually if you wish to run this code.
+```{r}
+#source("R/coefs_for_plots.R")
+```
+
+
+Now we can plot the coefficients using `My_coefplot` function from this package:
+```{r}
+
+```
+
+Plotting coefficients and confidence intervals for each predators and herbivores
+```{r}
+
+```
+
+
+
+
+### Second Survey
+```{r mvabund models SS2, cache = T, eval = T}
+com_SS2_mvabund <- mvabund(com_SS2)
+
+fit_SS2_no_effect <- manyglm(com_SS2_mvabund ~  1, family = "negative.binomial")
+fit_SS2_fish <- manyglm(com_SS2_mvabund ~  fish_SS2, family = "negative.binomial")
+fit_SS2_fish_isolation <- manyglm(com_SS2_mvabund ~  fish_SS2+isolation_SS2, family = "negative.binomial")
+fit_SS2_interaction <- manyglm(com_SS2_mvabund ~  fish_SS2*isolation_SS2, family = "negative.binomial")
+
+
+set.seed(3);anova_SS2 <- anova(fit_SS2_interaction, nBoot = 10000,  p.uni  = "none", test = "LR")
+anova_SS2
+```
+
+```{r mvabund models SS2 trait, cache = T, eval = T}
+env_SS2 <- data.frame(fish_SS2, isolation_SS2)
+
+fit_SS2_no_trait_interaction <- traitglm(L = com_SS2, R = env_SS2, Q = TRAITS_SS2, formula = ~ isolation_SS2 * fish_SS2, method = "manyglm", col.intercepts = T)
+fit_SS2_trait_pred_interaction <- traitglm(L = com_SS2, R = env_SS2, Q = TRAITS_SS2, formula = ~ (isolation_SS2:trophic) * (fish_SS2:trophic), method = "manyglm", col.intercepts = T)
+
+set.seed(3);anova_SS2_trait_interaction <- anova.traitglm(fit_SS2_no_trait_interaction,
+                                              fit_SS2_trait_pred_interaction,
+                                              nBoot = 10000, test = "LR", show.time = "none")
+anova_SS2_trait_interaction
+```
+
+Plotting the ordination.
+```{r, fig.height=5, fig.width=5, dpi = 150}
+fit_gllvm_no_effect_SS2<- gllvm(com_SS2,family = "negative.binomial", method = "VA", row.eff = F,n.init = 50, seed = 3, num.lv = 2)
+
+colors_SS2 <- NULL
+for (i in 1:dim(TRAITS_SS2)[1]){
+  if(TRAITS_SS2$trophic[i] == "Pr"){colors_SS2[i] <- "gold3"}
+  else {colors_SS2[i] <- "forestgreen"}
+}
+
+new_names_SS2 <- rownames(fit_gllvm_no_effect_SS2$params$theta)
+for(i in 1:length(new_names_SS2)){ 
+  if(substring(new_names_SS2, 4,4)[i] == "_"){
+    new_names_SS2[i] <- substring(new_names_SS2[i], 5,7)
+  }
+  if(substring(new_names_SS2, 2,2)[i] == "_"){
+    new_names_SS2[i] <- substring(new_names_SS2[i], 3,5)
+  } else {new_names_SS2[i] <- substring(new_names_SS2[i], 1,3)}
+}
+
+plot_ordination(fit_gllvm_no_effect_SS2, x1 = fish_SS2, x2 = isolation_SS2,
+                species = T, elipse = T, sites = T,
+                site_colors = c("sienna1", "steelblue1","sienna3","steelblue3","sienna4", "steelblue4"),
+                legend = F, legend_labels = c("Fishless - 30 m", "Fishless - 120 m","Fishless - 480 m","Fish - 30 m", "Fish - 120 m","Fish - 480 m"),
+                legend_ncol = 2, legend_horiz = F,species_col = colors_SS2, species_names = new_names_SS2, main = "SS2", species_size = TRAITS_SS2$volume_log, name_species_size =  TRAITS_SS2$volume_log*0.21)
+
+
+```
+
+Plotting coefficients and confidence intervals for each species
+```{r}
+
+```
+
+Plotting coefficients and confidence intervals for each predators and herbivores
+
+```{r}
+
+```
+
+
+
+### Third Survey
+```{r mvabund models SS3, cache = T, eval = T}
+com_SS3_mvabund <- mvabund(com_SS3)
+
+fit_SS3_no_effect <- manyglm(com_SS3_mvabund ~  1, family = "negative.binomial")
+fit_SS3_fish <- manyglm(com_SS3_mvabund ~  fish_SS3, family = "negative.binomial")
+fit_SS3_fish_isolation <- manyglm(com_SS3_mvabund ~  fish_SS3+isolation_SS3, family = "negative.binomial")
+fit_SS3_interaction <- manyglm(com_SS3_mvabund ~  fish_SS3*isolation_SS3, family = "negative.binomial")
+
+
+set.seed(3);anova_SS3 <- anova(fit_SS3_interaction, nBoot = 10000,  p.uni  = "none", test = "LR")
+anova_SS3
+```
+
+```{r mvabund models SS3 trait, cache = T, eval = T}
+env_SS3 <- data.frame(fish_SS3, isolation_SS3)
+
+fit_SS3_no_trait_interaction <- traitglm(L = com_SS3, R = env_SS3, formula = ~ isolation_SS3 * fish_SS3, method = "manyglm", col.intercepts = T)
+fit_SS3_trait_pred_interaction <- traitglm(L = com_SS3, R = env_SS3, Q = TRAITS_SS3, formula = ~ (isolation_SS3:trophic) * (fish_SS3:trophic), method = "manyglm", col.intercepts = T)
+
+set.seed(3);anova_SS3_trait_interaction <- anova(fit_SS3_no_trait_interaction,
+                                              fit_SS3_trait_pred_interaction,
+                                              nBoot = 10000, test = "LR", show.time = "none")
+anova_SS3_trait_interaction
+```
+
+Plotting the ordination.
+```{r, fig.height=5, fig.width=5, dpi = 150}
+
+fit_gllvm_no_effect_SS3<- gllvm(com_SS3,family = "negative.binomial", method = "VA", row.eff = F,n.init = 50, seed = 3, num.lv = 2)
+
+colors_SS3 <- NULL
+for (i in 1:dim(TRAITS_SS3)[1]){
+  if(TRAITS_SS3$trophic[i] == "Pr"){colors_SS3[i] <- "gold3"}
+  else {colors_SS3[i] <- "forestgreen"}
+}
+
+new_names_SS3 <- rownames(fit_gllvm_no_effect_SS3$params$theta)
+for(i in 1:length(new_names_SS3)){ 
+  if(substring(new_names_SS3, 4,4)[i] == "_"){
+    new_names_SS3[i] <- substring(new_names_SS3[i], 5,7)
+  }
+  if(substring(new_names_SS3, 2,2)[i] == "_"){
+    new_names_SS3[i] <- substring(new_names_SS3[i], 3,5)
+  } else {new_names_SS3[i] <- substring(new_names_SS3[i], 1,3)}
+}
+
+plot_ordination(fit_gllvm_no_effect_SS3, x1 = fish_SS3, x2 = isolation_SS3,
+                species = T, elipse = T, sites = T,
+                site_colors = c("sienna1", "steelblue1","sienna3","steelblue3","sienna4", "steelblue4"),
+                legend = F, legend_labels = c("Fishless - 30 m", "Fishless - 120 m","Fishless - 480 m","Fish - 30 m", "Fish - 120 m","Fish - 480 m"),
+                legend_ncol = 2, legend_horiz = F,species_col = colors_SS3, species_names = new_names_SS3, main = "SS3", species_size = TRAITS_SS3$volume_log, name_species_size =  TRAITS_SS3$volume_log*0.21)
+```
+
+Plotting coefficients and confidence intervals for each species
+```{r}
+
+```
+
+Plotting coefficients and confidence intervals for each predators and herbivores
+
+```{r}
+
+```
+
+
+
+## Testing for differences in distances of centroids of fish and fishless treatments in different isolation treatments.
+
+Here we will use a the function `Dif_dist()` to compute the distances between the centroids of fish and fishless treatments in each isolation treatment from the unconstrained ordination done by the `gllvm` function from package `gllvm`. Then, we compute the differences among the distances between the different distances and assess significance by permuting rows of the matrix always within fish and fishless treatments. By doing that we keep the mean differences among ponds with and without fish, but randomize any differences in the effect of fish across the isolation gradient.
+
+### First Survey
+```{r Dif_dist First Survey, cache=F}
+#Excluding samples for balanced design
+set.seed(3)
+Dif_dist_SS1<- Dif_dist(com = com_SS1, x1 = fish_SS1, x2 = isolation_SS1, nperm = 10000, family = "negative.binomial", num.lv = 2, strata = T, show.perm = F, orig_n.init = 20, perm_n.init = 1, type = "centroid", method = "VA", refit_perm = F)
+
+Dif_dist_SS1$distances
+Dif_dist_SS1$diferences
+Dif_dist_SS1$p.values
+```
+
+### Second Survey
+```{r Dif_dist Second Survey, cache=F}
+#Excluding samples for balanced design
+set.seed(3)
+Dif_dist_SS2<- Dif_dist(com = com_SS2, x1 = fish_SS2, x2 = isolation_SS1, nperm = 10000, family = "negative.binomial", num.lv = 2, strata = T, show.perm = F, orig_n.init = 20, perm_n.init = 1, type = "centroid", method = "VA", refit_perm = F)
+
+Dif_dist_SS2$distances
+Dif_dist_SS2$diferences
+Dif_dist_SS2$p.values
+```
+
+### Third Survey
+
+Here, again we had to exclude two ponds from  the 30 and 120 isolation treatments to achieve a balanced design. We randomly selected one fishless pond from the 30m and 120m isolation treatments to be excluded.
+```{r Dif_dist Third Survey, cache=F}
+#Excluding samples for balanced design
+set.seed(1)
+first <- sample(row(com_SS3)[which(fish_SS3=="absent" & isolation_SS3 == "30")], size = 1)
+second <- sample(row(com_SS3)[which(fish_SS3=="absent" & isolation_SS3 == "120")], size = 1)
+com_SS3_incomplete <- com_SS3[-c(first,second),]
+fish_SS3_incomplete <- fish_SS3[-c(first,second)]
+isolation_SS3_incomplete <- isolation_SS3[-c(first,second)]
+
+set.seed(1)
+Dif_dist_SS3<- Dif_dist(com = com_SS3_incomplete, x1 = fish_SS3_incomplete,x2 = isolation_SS3_incomplete,nperm = 10000, family = "negative.binomial", num.lv = 2,
+                                    strata = T, show.perm = F, orig_n.init = 20, perm_n.init = 1, type = "centroid", method = "VA", refit_perm = F)
+
+Dif_dist_SS3$distances
+Dif_dist_SS3$diferences
+Dif_dist_SS3$p.values
+```
+
+
+We can check if our permutation procedure is working by using the `plot_null` function to plot some of the null communities generated by  `Dif_dist()`. This is an example of the first 15 permutations for the third survey:
+```{r, fig.height=10, fig.width=10, dpi = 150}
+set.seed(3)
+par(mfrow = c(4,4))
+plot_null(com_SS3_incomplete, nperm = 15 ,x1 = fish_SS3_incomplete, x2 = isolation_SS3_incomplete,
+          family = "negative.binomial", strata = T, orig_n.init = 10, xlim = c(-2.5,2.5), ylim = c(-2.5,2.5), 
+          refit_perm = F, elipse = T, site_colors = c("sienna1", "steelblue1","sienna3","steelblue3","sienna4", "steelblue4"))
+```
+It seems like everything is ok.

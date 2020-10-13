@@ -431,10 +431,24 @@ anova_incomplete
 
 Now, running models separately for each survey.
 
-### First Survey
+First we have to change the abundance matrices into the right format fot
+`mvabund` and also prepare other matrices that will be used.
 
 ``` r
 com_SS1_mvabund <- mvabund(com_SS1)
+com_SS2_mvabund <- mvabund(com_SS2)
+com_SS3_mvabund <- mvabund(com_SS3)
+
+env_SS1 <- data.frame(fish_SS1, isolation_SS1)
+env_SS2 <- data.frame(fish_SS2, isolation_SS2)
+env_SS3 <- data.frame(fish_SS3, isolation_SS3)
+
+com_oc <- decostand(com, method = "pa")
+```
+
+### First Survey
+
+``` r
 
 fit_SS1_no_effect <- manyglm(com_SS1_mvabund ~  1, family = "negative.binomial")
 fit_SS1_fish <- manyglm(com_SS1_mvabund ~  fish_SS1, family = "negative.binomial")
@@ -442,7 +456,7 @@ fit_SS1_isolation <- manyglm(com_SS1_mvabund ~  isolation_SS1, family = "negativ
 fit_SS1_interaction <- manyglm(com_SS1_mvabund ~  fish_SS1*isolation_SS1, family = "negative.binomial")
 
 set.seed(3);anova_SS1 <- anova(fit_SS1_interaction, nBoot = 10000,  p.uni  = "none", test = "LR")
-#> Time elapsed: 0 hr 2 min 33 sec
+#> Time elapsed: 0 hr 2 min 32 sec
 anova_SS1
 #> Analysis of Deviance Table
 #> 
@@ -529,20 +543,147 @@ through the `source` function. You may have to download the file
 manually if you wish to run this code.
 
 ``` r
-#source("R/coefs_for_plots.R")
+source("R/coefs_for_plots.R")
 ```
 
 Now we can plot the coefficients using `My_coefplot` function from this
-package:
+package.
 
-Plotting coefficients and confidence intervals for each predators and
-herbivores
+First, we compare the effect of fish in each isolation distance.
+
+``` r
+ab_SS1_pred <- order(colSums(com[which(TRAITS$trophic == "Pr")])[which(colSums(com_oc[which(survey == "1"),which(TRAITS$trophic == "Pr")]) > 2)], decreasing = T)
+ab_SS1_cons <- order(colSums(com[which(TRAITS$trophic == "Non_Pred")])[which(colSums(com_oc[which(survey == "1"),which(TRAITS$trophic == "Non_Pred")]) > 2)], decreasing = T)
+
+
+par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
+
+
+My_coefplot(c(as.matrix(c(fish_effect_SS1_30[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
+                          fish_effect_SS1_30[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons]))),
+            c(as.matrix(c(fish_effect_SS1_upper_30[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
+                          fish_effect_SS1_upper_30[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons]))),
+            c(as.matrix(c(fish_effect_SS1_lower_30[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
+                          fish_effect_SS1_lower_30[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons]))),
+            species_labels = c(names(fish_effect_SS1_30[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred]),
+                               names(fish_effect_SS1_30[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons])),
+            xlab = "Effect on abundance",
+            main = "30 m - SS1", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 2)
+
+My_coefplot(c(as.matrix(c(fish_effect_SS1_120[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
+                          fish_effect_SS1_120[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons]))),
+            c(as.matrix(c(fish_effect_SS1_upper_120[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
+                          fish_effect_SS1_upper_120[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons]))),
+            c(as.matrix(c(fish_effect_SS1_lower_120[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
+                          fish_effect_SS1_lower_120[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons]))),
+            species_labels = c(names(fish_effect_SS1_120[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred]),
+                               names(fish_effect_SS1_120[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons])),
+            xlab = "Effect on abundance",
+            main = "120 m - SS1", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 2)
+
+My_coefplot(c(as.matrix(c(fish_effect_SS1_480[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
+                          fish_effect_SS1_480[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons]))),
+            c(as.matrix(c(fish_effect_SS1_upper_480[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
+                          fish_effect_SS1_upper_480[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons]))),
+            c(as.matrix(c(fish_effect_SS1_lower_480[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
+                          fish_effect_SS1_lower_480[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons]))),
+            species_labels = c(names(fish_effect_SS1_480[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred]),
+                               names(fish_effect_SS1_480[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons])),
+            xlab = "Effect on abundance",
+            main = "480 m - SS1", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 2)
+```
+
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+
+Now, the pairwise effect of isolation for ponds without fish.
+
+``` r
+par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
+
+My_coefplot(c(as.matrix(c(isolation_effect_SS1_30_120[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
+                          isolation_effect_SS1_30_120[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons]))),
+            c(as.matrix(c(isolation_effect_SS1_upper_30_120[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
+                          isolation_effect_SS1_upper_30_120[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons]))),
+            c(as.matrix(c(isolation_effect_SS1_lower_30_120[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
+                          isolation_effect_SS1_lower_30_120[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons]))),
+            species_labels = c(names(isolation_effect_SS1_30_120[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred]),
+                               names(isolation_effect_SS1_30_120[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons])),
+            xlab = "Effect on abundance",
+            main = "30 to 120 - SS1", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 2)
+
+
+My_coefplot(c(as.matrix(c(isolation_effect_SS1_30_480[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
+                          isolation_effect_SS1_30_480[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons]))),
+            c(as.matrix(c(isolation_effect_SS1_upper_30_480[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
+                          isolation_effect_SS1_upper_30_480[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons]))),
+            c(as.matrix(c(isolation_effect_SS1_lower_30_480[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
+                          isolation_effect_SS1_lower_30_480[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons]))),
+            species_labels = c(names(isolation_effect_SS1_30_480[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred]),
+                               names(isolation_effect_SS1_30_480[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons])),
+            xlab = "Effect on abundance",
+            main = "30 to 480 - SS1", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 2)
+
+
+My_coefplot(c(as.matrix(c(isolation_effect_SS1_120_480[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
+                          isolation_effect_SS1_120_480[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons]))),
+            c(as.matrix(c(isolation_effect_SS1_upper_120_480[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
+                          isolation_effect_SS1_upper_120_480[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons]))),
+            c(as.matrix(c(isolation_effect_SS1_lower_120_480[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
+                          isolation_effect_SS1_lower_120_480[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons]))),
+            species_labels = c(names(isolation_effect_SS1_120_480[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred]),
+                               names(isolation_effect_SS1_120_480[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons])),
+            xlab = "Effect on abundance",
+            main = "120 to 480 - SS1", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 2)
+```
+
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+
+And, the pairwise effect of isolation for ponds with fish.
+
+``` r
+par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
+
+My_coefplot(c(as.matrix(c(isolation_effect_fish_SS1_30_120[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
+                          isolation_effect_fish_SS1_30_120[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons]))),
+            c(as.matrix(c(isolation_effect_fish_SS1_upper_30_120[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
+                          isolation_effect_fish_SS1_upper_30_120[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons]))),
+            c(as.matrix(c(isolation_effect_fish_SS1_lower_30_120[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
+                          isolation_effect_fish_SS1_lower_30_120[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons]))),
+            species_labels = c(names(isolation_effect_fish_SS1_30_120[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred]),
+                               names(isolation_effect_fish_SS1_30_120[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons])),
+            xlab = "Effect on abundance",
+            main = "30 to 120 - SS1", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 2)
+
+
+My_coefplot(c(as.matrix(c(isolation_effect_fish_SS1_30_480[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
+                          isolation_effect_fish_SS1_30_480[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons]))),
+            c(as.matrix(c(isolation_effect_fish_SS1_upper_30_480[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
+                          isolation_effect_fish_SS1_upper_30_480[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons]))),
+            c(as.matrix(c(isolation_effect_fish_SS1_lower_30_480[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
+                          isolation_effect_fish_SS1_lower_30_480[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons]))),
+            species_labels = c(names(isolation_effect_fish_SS1_30_480[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred]),
+                               names(isolation_effect_fish_SS1_30_480[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons])),
+            xlab = "Effect on abundance",
+            main = "30 to 480 - SS1", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 2)
+
+
+My_coefplot(c(as.matrix(c(isolation_effect_fish_SS1_120_480[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
+                          isolation_effect_fish_SS1_120_480[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons]))),
+            c(as.matrix(c(isolation_effect_fish_SS1_upper_120_480[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
+                          isolation_effect_fish_SS1_upper_120_480[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons]))),
+            c(as.matrix(c(isolation_effect_fish_SS1_lower_120_480[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
+                          isolation_effect_fish_SS1_lower_120_480[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons]))),
+            species_labels = c(names(isolation_effect_fish_SS1_120_480[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred]),
+                               names(isolation_effect_fish_SS1_120_480[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons])),
+            xlab = "Effect on abundance",
+            main = "120 to 480 - SS1", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 2)
+```
+
+<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
 
 ### Second Survey
 
 ``` r
-com_SS2_mvabund <- mvabund(com_SS2)
-
 fit_SS2_no_effect <- manyglm(com_SS2_mvabund ~  1, family = "negative.binomial")
 fit_SS2_fish <- manyglm(com_SS2_mvabund ~  fish_SS2, family = "negative.binomial")
 fit_SS2_fish_isolation <- manyglm(com_SS2_mvabund ~  fish_SS2+isolation_SS2, family = "negative.binomial")
@@ -550,7 +691,7 @@ fit_SS2_interaction <- manyglm(com_SS2_mvabund ~  fish_SS2*isolation_SS2, family
 
 
 set.seed(3);anova_SS2 <- anova(fit_SS2_interaction, nBoot = 10000,  p.uni  = "none", test = "LR")
-#> Time elapsed: 0 hr 5 min 16 sec
+#> Time elapsed: 0 hr 5 min 5 sec
 anova_SS2
 #> Analysis of Deviance Table
 #> 
@@ -570,8 +711,6 @@ anova_SS2
 ```
 
 ``` r
-env_SS2 <- data.frame(fish_SS2, isolation_SS2)
-
 fit_SS2_no_trait_interaction <- traitglm(L = com_SS2, R = env_SS2, Q = TRAITS_SS2, formula = ~ isolation_SS2 * fish_SS2, method = "manyglm", col.intercepts = T)
 fit_SS2_trait_pred_interaction <- traitglm(L = com_SS2, R = env_SS2, Q = TRAITS_SS2, formula = ~ (isolation_SS2:trophic) * (fish_SS2:trophic), method = "manyglm", col.intercepts = T)
 
@@ -618,21 +757,237 @@ plot_ordination(fit_gllvm_no_effect_SS2, x1 = fish_SS2, x2 = isolation_SS2,
                 species = T, elipse = T, sites = T,
                 site_colors = c("sienna1", "steelblue1","sienna3","steelblue3","sienna4", "steelblue4"),
                 legend = F, legend_labels = c("Fishless - 30 m", "Fishless - 120 m","Fishless - 480 m","Fish - 30 m", "Fish - 120 m","Fish - 480 m"),
-                legend_ncol = 2, legend_horiz = F,species_col = colors_SS2, species_names = new_names_SS2, main = "SS2", species_size = TRAITS_SS2$volume_log, name_species_size =  TRAITS_SS2$volume_log*0.21)
+                legend_ncol = 2, legend_horiz = F,species_col = colors_SS2, species_names = new_names_SS2, main = "Second Survey", species_size = TRAITS_SS2$volume_log, name_species_size =  TRAITS_SS2$volume_log*0.21)
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
 
-Plotting coefficients and confidence intervals for each species
+Plotting coefficients and confidence intervals for each species.
 
-Plotting coefficients and confidence intervals for each predators and
-herbivores
+First, we compare the effect of fish in each isolation distance.
+
+``` r
+ab_SS2_pred <- order(colSums(com[which(TRAITS$trophic == "Pr")])[which(colSums(com_oc[which(survey == "1"),which(TRAITS$trophic == "Pr")]) > 2)], decreasing = T)
+ab_SS2_cons <- order(colSums(com[which(TRAITS$trophic == "Non_Pred")])[which(colSums(com_oc[which(survey == "1"),which(TRAITS$trophic == "Non_Pred")]) > 2)], decreasing = T)
+
+par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
+
+My_coefplot(c(as.matrix(c(fish_effect_SS2_30[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
+                          fish_effect_SS2_30[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
+            c(as.matrix(c(fish_effect_SS2_upper_30[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
+                          fish_effect_SS2_upper_30[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
+            c(as.matrix(c(fish_effect_SS2_lower_30[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
+                          fish_effect_SS2_lower_30[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
+            species_labels = c(names(fish_effect_SS2_30[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred]),
+                               names(fish_effect_SS2_30[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons])),
+            xlab = "Effect on abundance",
+            main = "30 m - SS2", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
+
+My_coefplot(c(as.matrix(c(fish_effect_SS2_120[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
+                          fish_effect_SS2_120[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
+            c(as.matrix(c(fish_effect_SS2_upper_120[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
+                          fish_effect_SS2_upper_120[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
+            c(as.matrix(c(fish_effect_SS2_lower_120[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
+                          fish_effect_SS2_lower_120[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
+            species_labels = c(names(fish_effect_SS2_120[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred]),
+                               names(fish_effect_SS2_120[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons])),
+            xlab = "Effect on abundance",
+            main = "120 m - SS2", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
+
+My_coefplot(c(as.matrix(c(fish_effect_SS2_480[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
+                          fish_effect_SS2_480[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
+            c(as.matrix(c(fish_effect_SS2_upper_480[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
+                          fish_effect_SS2_upper_480[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
+            c(as.matrix(c(fish_effect_SS2_lower_480[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
+                          fish_effect_SS2_lower_480[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
+            species_labels = c(names(fish_effect_SS2_480[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred]),
+                               names(fish_effect_SS2_480[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons])),
+            xlab = "Effect on abundance",
+            main = "480 m - SS2", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
+```
+
+<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
+
+Because the effect of treatments on aquatic insects was mediated by
+trophic level, we can assess the same parameters for predators and
+non-predators as a whole.
+
+``` r
+par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
+
+My_coefplot(c(as.matrix(rev(trait_fish_30_SS2))),
+            c(as.matrix(rev(trait_fish_30_SS2_upper))),
+            c(as.matrix(rev(trait_fish_30_SS2_lower))),
+            species_labels = c("Predators", "Non-Predators"),
+            xlab = NULL,
+            main = "30 m - SS2", cex.axis = 0.8, cex.main = 0.8,y_spa = 0.25, rect = T, rect_lim = 1)
+
+My_coefplot(c(as.matrix(rev(trait_fish_120_SS2))),
+            c(as.matrix(rev(trait_fish_120_SS2_upper))),
+            c(as.matrix(rev(trait_fish_120_SS2_lower))),
+            species_labels = c("Predators", "Non-Predators"),
+            xlab = NULL,
+            main = "120 m - SS2", cex.axis = 0.8, cex.main = 0.8,y_spa = 0.25, rect = T, rect_lim = 1)
+
+My_coefplot(c(as.matrix(rev(trait_fish_480_SS2))),
+            c(as.matrix(rev(trait_fish_480_SS2_upper))),
+            c(as.matrix(rev(trait_fish_480_SS2_lower))),
+            species_labels = c("Predators", "Non-Predators"),
+            xlab = NULL,
+            main = "480 m - SS2", cex.axis = 0.8, cex.main = 0.8,y_spa = 0.25, rect = T, rect_lim = 1)
+```
+
+<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
+
+Now, the pairwise effect of isolation for ponds without fish for each
+species.
+
+``` r
+par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
+
+My_coefplot(c(as.matrix(c(isolation_effect_SS2_30_120[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
+                          isolation_effect_SS2_30_120[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
+            c(as.matrix(c(isolation_effect_SS2_upper_30_120[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
+                          isolation_effect_SS2_upper_30_120[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
+            c(as.matrix(c(isolation_effect_SS2_lower_30_120[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
+                          isolation_effect_SS2_lower_30_120[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
+            species_labels = c(names(isolation_effect_SS2_30_120[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred]),
+                               names(isolation_effect_SS2_30_120[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons])),
+            xlab = "Effect on abundance",
+            main = "30 to 120 - SS2", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
+
+
+My_coefplot(c(as.matrix(c(isolation_effect_SS2_30_480[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
+                          isolation_effect_SS2_30_480[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
+            c(as.matrix(c(isolation_effect_SS2_upper_30_480[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
+                          isolation_effect_SS2_upper_30_480[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
+            c(as.matrix(c(isolation_effect_SS2_lower_30_480[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
+                          isolation_effect_SS2_lower_30_480[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
+            species_labels = c(names(isolation_effect_SS2_30_480[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred]),
+                               names(isolation_effect_SS2_30_480[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons])),
+            xlab = "Effect on abundance",
+            main = "30 to 480 - SS2", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
+
+
+My_coefplot(c(as.matrix(c(isolation_effect_SS2_120_480[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
+                          isolation_effect_SS2_120_480[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
+            c(as.matrix(c(isolation_effect_SS2_upper_120_480[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
+                          isolation_effect_SS2_upper_120_480[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
+            c(as.matrix(c(isolation_effect_SS2_lower_120_480[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
+                          isolation_effect_SS2_lower_120_480[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
+            species_labels = c(names(isolation_effect_SS2_120_480[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred]),
+                               names(isolation_effect_SS2_120_480[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons])),
+            xlab = "Effect on abundance",
+            main = "120 to 480 - SS2", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
+```
+
+<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
+
+For trophic level.
+
+``` r
+par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
+
+My_coefplot(c(as.matrix(rev(trait_30_120_SS2))),
+            c(as.matrix(rev(trait_30_120_SS2_upper))),
+            c(as.matrix(rev(trait_30_120_SS2_lower))),
+            species_labels = c("Predators", "Non Predators"),
+            xlab = NULL,
+            main = "30 m to 120 m - SS2", cex.axis = 0.8, cex.main = 0.8,y_spa = 0.25, rect = T, rect_lim = 1)
+
+My_coefplot(c(as.matrix(rev(trait_30_480_SS2))),
+            c(as.matrix(rev(trait_30_480_SS2_upper))),
+            c(as.matrix(rev(trait_30_480_SS2_lower))),
+            species_labels = c("Predators", "Non Predators"),
+            xlab = NULL,
+            main = "30 m to 480 m- SS2", cex.axis = 0.8, cex.main = 0.8,y_spa = 0.25, rect = T, rect_lim = 1)
+
+My_coefplot(c(as.matrix(rev(trait_120_480_SS2))),
+            c(as.matrix(rev(trait_120_480_SS2_upper))),
+            c(as.matrix(rev(trait_120_480_SS2_lower))),
+            species_labels = c("Predators", "Non Predators"),
+            xlab = NULL,
+            main = "120 m to 480 m - SS2", cex.axis = 0.8, cex.main = 0.8,y_spa = 0.25, rect = T, rect_lim = 1)
+```
+
+<img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
+
+And, the pairwise effect of isolation for ponds with fish for each
+species.
+
+``` r
+par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
+
+My_coefplot(c(as.matrix(c(isolation_effect_fish_SS2_30_120[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
+                          isolation_effect_fish_SS2_30_120[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
+            c(as.matrix(c(isolation_effect_fish_SS2_upper_30_120[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
+                          isolation_effect_fish_SS2_upper_30_120[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
+            c(as.matrix(c(isolation_effect_fish_SS2_lower_30_120[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
+                          isolation_effect_fish_SS2_lower_30_120[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
+            species_labels = c(names(isolation_effect_fish_SS2_30_120[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred]),
+                               names(isolation_effect_fish_SS2_30_120[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons])),
+            xlab = "Effect on abundance",
+            main = "30 to 120 - SS2", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
+
+
+My_coefplot(c(as.matrix(c(isolation_effect_fish_SS2_30_480[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
+                          isolation_effect_fish_SS2_30_480[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
+            c(as.matrix(c(isolation_effect_fish_SS2_upper_30_480[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
+                          isolation_effect_fish_SS2_upper_30_480[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
+            c(as.matrix(c(isolation_effect_fish_SS2_lower_30_480[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
+                          isolation_effect_fish_SS2_lower_30_480[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
+            species_labels = c(names(isolation_effect_fish_SS2_30_480[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred]),
+                               names(isolation_effect_fish_SS2_30_480[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons])),
+            xlab = "Effect on abundance",
+            main = "30 to 480 - SS2", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
+
+
+My_coefplot(c(as.matrix(c(isolation_effect_fish_SS2_120_480[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
+                          isolation_effect_fish_SS2_120_480[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
+            c(as.matrix(c(isolation_effect_fish_SS2_upper_120_480[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
+                          isolation_effect_fish_SS2_upper_120_480[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
+            c(as.matrix(c(isolation_effect_fish_SS2_lower_120_480[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
+                          isolation_effect_fish_SS2_lower_120_480[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
+            species_labels = c(names(isolation_effect_fish_SS2_120_480[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred]),
+                               names(isolation_effect_fish_SS2_120_480[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons])),
+            xlab = "Effect on abundance",
+            main = "120 to 480 - SS2", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
+```
+
+<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
+
+For trophic level.
+
+``` r
+par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
+
+My_coefplot(c(as.matrix(rev(trait_30_120_fish_SS2))),
+            c(as.matrix(rev(trait_30_120_fish_SS2_upper))),
+            c(as.matrix(rev(trait_30_120_fish_SS2_lower))),
+            species_labels = c("Predators", "Non Predators"),
+            xlab = NULL,
+            main = "30 m to 120 m - SS2 - FISH", cex.axis = 0.8, cex.main = 0.8,y_spa = 0.25, rect = T, rect_lim = 1)
+
+My_coefplot(c(as.matrix(rev(trait_30_480_fish_SS2))),
+            c(as.matrix(rev(trait_30_480_fish_SS2_upper))),
+            c(as.matrix(rev(trait_30_480_fish_SS2_lower))),
+            species_labels = c("Predators", "Non Predators"),
+            xlab = NULL,
+            main = "30 m to 480 m- SS2 - FISH", cex.axis = 0.8, cex.main = 0.8,y_spa = 0.25, rect = T, rect_lim = 1)
+
+My_coefplot(c(as.matrix(rev(trait_120_480_fish_SS2))),
+            c(as.matrix(rev(trait_120_480_fish_SS2_upper))),
+            c(as.matrix(rev(trait_120_480_fish_SS2_lower))),
+            species_labels = c("Predators", "Non Predators"),
+            xlab = NULL,
+            main = "120 m to 480 m - SS2 - FISH", cex.axis = 0.8, cex.main = 0.8,y_spa = 0.25, rect = T, rect_lim = 1)
+```
+
+<img src="man/figures/README-unnamed-chunk-13-1.png" width="100%" />
 
 ### Third Survey
 
 ``` r
-com_SS3_mvabund <- mvabund(com_SS3)
-
 fit_SS3_no_effect <- manyglm(com_SS3_mvabund ~  1, family = "negative.binomial")
 fit_SS3_fish <- manyglm(com_SS3_mvabund ~  fish_SS3, family = "negative.binomial")
 fit_SS3_fish_isolation <- manyglm(com_SS3_mvabund ~  fish_SS3+isolation_SS3, family = "negative.binomial")
@@ -640,7 +995,7 @@ fit_SS3_interaction <- manyglm(com_SS3_mvabund ~  fish_SS3*isolation_SS3, family
 
 
 set.seed(3);anova_SS3 <- anova(fit_SS3_interaction, nBoot = 10000,  p.uni  = "none", test = "LR")
-#> Time elapsed: 0 hr 4 min 49 sec
+#> Time elapsed: 0 hr 4 min 37 sec
 anova_SS3
 #> Analysis of Deviance Table
 #> 
@@ -660,8 +1015,6 @@ anova_SS3
 ```
 
 ``` r
-env_SS3 <- data.frame(fish_SS3, isolation_SS3)
-
 fit_SS3_no_trait_interaction <- traitglm(L = com_SS3, R = env_SS3, formula = ~ isolation_SS3 * fish_SS3, method = "manyglm", col.intercepts = T)
 #> No traits matrix entered, so will fit SDMs with different env response for each spp
 fit_SS3_trait_pred_interaction <- traitglm(L = com_SS3, R = env_SS3, Q = TRAITS_SS3, formula = ~ (isolation_SS3:trophic) * (fish_SS3:trophic), method = "manyglm", col.intercepts = T)
@@ -710,15 +1063,233 @@ plot_ordination(fit_gllvm_no_effect_SS3, x1 = fish_SS3, x2 = isolation_SS3,
                 species = T, elipse = T, sites = T,
                 site_colors = c("sienna1", "steelblue1","sienna3","steelblue3","sienna4", "steelblue4"),
                 legend = F, legend_labels = c("Fishless - 30 m", "Fishless - 120 m","Fishless - 480 m","Fish - 30 m", "Fish - 120 m","Fish - 480 m"),
-                legend_ncol = 2, legend_horiz = F,species_col = colors_SS3, species_names = new_names_SS3, main = "SS3", species_size = TRAITS_SS3$volume_log, name_species_size =  TRAITS_SS3$volume_log*0.21)
+                legend_ncol = 2, legend_horiz = F,species_col = colors_SS3, species_names = new_names_SS3, main = "Third Survey", species_size = TRAITS_SS3$volume_log, name_species_size =  TRAITS_SS3$volume_log*0.21)
 ```
 
-<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" />
 
-Plotting coefficients and confidence intervals for each species
+Plotting coefficients and confidence intervals for each species.
 
-Plotting coefficients and confidence intervals for each predators and
-herbivores
+First, we compare the effect of fish in each isolation distance.
+
+``` r
+ab_SS3_pred <- order(colSums(com[which(TRAITS$trophic == "Pr")])[which(colSums(com_oc[which(survey == "1"),which(TRAITS$trophic == "Pr")]) > 2)], decreasing = T)
+ab_SS3_cons <- order(colSums(com[which(TRAITS$trophic == "Non_Pred")])[which(colSums(com_oc[which(survey == "1"),which(TRAITS$trophic == "Non_Pred")]) > 2)], decreasing = T)
+
+par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
+
+My_coefplot(c(as.matrix(c(fish_effect_SS3_30[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
+                          fish_effect_SS3_30[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons]))),
+            c(as.matrix(c(fish_effect_SS3_upper_30[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
+                          fish_effect_SS3_upper_30[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons]))),
+            c(as.matrix(c(fish_effect_SS3_lower_30[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
+                          fish_effect_SS3_lower_30[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons]))),
+            species_labels = c(names(fish_effect_SS3_30[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred]),
+                               names(fish_effect_SS3_30[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons])),
+            xlab = "Effect on abundance",
+            main = "30 m - SS2", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
+
+My_coefplot(c(as.matrix(c(fish_effect_SS3_120[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
+                          fish_effect_SS3_120[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons]))),
+            c(as.matrix(c(fish_effect_SS3_upper_120[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
+                          fish_effect_SS3_upper_120[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons]))),
+            c(as.matrix(c(fish_effect_SS3_lower_120[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
+                          fish_effect_SS3_lower_120[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons]))),
+            species_labels = c(names(fish_effect_SS3_120[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred]),
+                               names(fish_effect_SS3_120[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons])),
+            xlab = "Effect on abundance",
+            main = "120 m - SS2", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
+
+My_coefplot(c(as.matrix(c(fish_effect_SS3_480[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
+                          fish_effect_SS3_480[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons]))),
+            c(as.matrix(c(fish_effect_SS3_upper_480[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
+                          fish_effect_SS3_upper_480[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons]))),
+            c(as.matrix(c(fish_effect_SS3_lower_480[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
+                          fish_effect_SS3_lower_480[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons]))),
+            species_labels = c(names(fish_effect_SS3_480[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred]),
+                               names(fish_effect_SS3_480[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons])),
+            xlab = "Effect on abundance",
+            main = "480 m - SS2", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
+```
+
+<img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />
+
+Because the effect of treatments on aquatic insects was mediated by
+trophic level, we can assess the same parameters for predators and
+non-predators as a whole.
+
+``` r
+par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
+
+My_coefplot(c(as.matrix(rev(trait_fish_30_SS3))),
+            c(as.matrix(rev(trait_fish_30_SS3_upper))),
+            c(as.matrix(rev(trait_fish_30_SS3_lower))),
+            species_labels = c("Predators", "Non Predators"),
+            xlab = NULL,
+            main = "30 m - SS2", cex.axis = 0.8, cex.main = 0.8,y_spa = 0.25, rect = T, rect_lim = 1)
+
+My_coefplot(c(as.matrix(rev(trait_fish_120_SS3))),
+            c(as.matrix(rev(trait_fish_120_SS3_upper))),
+            c(as.matrix(rev(trait_fish_120_SS3_lower))),
+            species_labels = c("Predators", "Non Predators"),
+            xlab = NULL,
+            main = "30 m - SS2", cex.axis = 0.8, cex.main = 0.8,y_spa = 0.25, rect = T, rect_lim = 1)
+
+My_coefplot(c(as.matrix(rev(trait_fish_480_SS3))),
+            c(as.matrix(rev(trait_fish_480_SS3_upper))),
+            c(as.matrix(rev(trait_fish_480_SS3_lower))),
+            species_labels = c("Predators", "Non Predators"),
+            xlab = NULL,
+            main = "30 m - SS2", cex.axis = 0.8, cex.main = 0.8,y_spa = 0.25, rect = T, rect_lim = 1)
+```
+
+<img src="man/figures/README-unnamed-chunk-16-1.png" width="100%" />
+
+Now, the pairwise effect of isolation for ponds without fish for each
+species.
+
+``` r
+par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
+
+My_coefplot(c(as.matrix(c(isolation_effect_SS3_30_120[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
+                          isolation_effect_SS3_30_120[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons]))),
+            c(as.matrix(c(isolation_effect_SS3_upper_30_120[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
+                          isolation_effect_SS3_upper_30_120[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons]))),
+            c(as.matrix(c(isolation_effect_SS3_lower_30_120[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
+                          isolation_effect_SS3_lower_30_120[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons]))),
+            species_labels = c(names(isolation_effect_SS3_30_120[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred]),
+                               names(isolation_effect_SS3_30_120[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons])),
+            xlab = "Effect on abundance",
+            main = "30 to 120 - SS2", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
+
+
+My_coefplot(c(as.matrix(c(isolation_effect_SS3_30_480[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
+                          isolation_effect_SS3_30_480[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons]))),
+            c(as.matrix(c(isolation_effect_SS3_upper_30_480[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
+                          isolation_effect_SS3_upper_30_480[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons]))),
+            c(as.matrix(c(isolation_effect_SS3_lower_30_480[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
+                          isolation_effect_SS3_lower_30_480[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons]))),
+            species_labels = c(names(isolation_effect_SS3_30_480[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred]),
+                               names(isolation_effect_SS3_30_480[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons])),
+            xlab = "Effect on abundance",
+            main = "30 to 480 - SS2", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
+
+
+My_coefplot(c(as.matrix(c(isolation_effect_SS3_120_480[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
+                          isolation_effect_SS3_120_480[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons]))),
+            c(as.matrix(c(isolation_effect_SS3_upper_120_480[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
+                          isolation_effect_SS3_upper_120_480[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons]))),
+            c(as.matrix(c(isolation_effect_SS3_lower_120_480[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
+                          isolation_effect_SS3_lower_120_480[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons]))),
+            species_labels = c(names(isolation_effect_SS3_120_480[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred]),
+                               names(isolation_effect_SS3_120_480[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons])),
+            xlab = "Effect on abundance",
+            main = "120 to 480 - SS2", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
+```
+
+<img src="man/figures/README-unnamed-chunk-17-1.png" width="100%" />
+
+For trophic level.
+
+``` r
+par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
+
+My_coefplot(c(as.matrix(rev(trait_30_120_SS3))),
+            c(as.matrix(rev(trait_30_120_SS3_upper))),
+            c(as.matrix(rev(trait_30_120_SS3_lower))),
+            species_labels = c("Predators", "Non Predators"),
+            xlab = NULL,
+            main = "30 m to 120 m - SS3", cex.axis = 0.8, cex.main = 0.8, y_spa = 0.25, rect = T, rect_lim = 1)
+
+My_coefplot(c(as.matrix(rev(trait_30_480_SS3))),
+            c(as.matrix(rev(trait_30_480_SS3_upper))),
+            c(as.matrix(rev(trait_30_480_SS3_lower))),
+            species_labels = c("Predators", "Non Predators"),
+            xlab = NULL,
+            main = "30 m to 480 m- SS3", cex.axis = 0.8, cex.main = 0.8, y_spa = 0.25, rect = T, rect_lim = 1)
+
+My_coefplot(c(as.matrix(rev(trait_120_480_SS3))),
+            c(as.matrix(rev(trait_120_480_SS3_upper))),
+            c(as.matrix(rev(trait_120_480_SS3_lower))),
+            species_labels = c("Predators", "Non Predators"),
+            xlab = NULL,
+            main = "120 m to 480 m - SS3", cex.axis = 0.8, cex.main = 0.8, y_spa = 0.25, rect = T, rect_lim = 1)
+```
+
+<img src="man/figures/README-unnamed-chunk-18-1.png" width="100%" />
+
+And, the pairwise effect of isolation for ponds with fish for each
+species.
+
+``` r
+par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
+
+My_coefplot(c(as.matrix(c(isolation_effect_fish_SS3_30_120[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
+                          isolation_effect_fish_SS3_30_120[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons]))),
+            c(as.matrix(c(isolation_effect_fish_SS3_upper_30_120[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
+                          isolation_effect_fish_SS3_upper_30_120[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons]))),
+            c(as.matrix(c(isolation_effect_fish_SS3_lower_30_120[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
+                          isolation_effect_fish_SS3_lower_30_120[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons]))),
+            species_labels = c(names(isolation_effect_fish_SS3_30_120[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred]),
+                               names(isolation_effect_fish_SS3_30_120[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons])),
+            xlab = "Effect on abundance",
+            main = "30 to 120 - SS3", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
+
+
+My_coefplot(c(as.matrix(c(isolation_effect_fish_SS3_30_480[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
+                          isolation_effect_fish_SS3_30_480[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons]))),
+            c(as.matrix(c(isolation_effect_fish_SS3_upper_30_480[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
+                          isolation_effect_fish_SS3_upper_30_480[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons]))),
+            c(as.matrix(c(isolation_effect_fish_SS3_lower_30_480[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
+                          isolation_effect_fish_SS3_lower_30_480[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons]))),
+            species_labels = c(names(isolation_effect_fish_SS3_30_480[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred]),
+                               names(isolation_effect_fish_SS3_30_480[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons])),
+            xlab = "Effect on abundance",
+            main = "30 to 480 - SS3", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
+
+
+My_coefplot(c(as.matrix(c(isolation_effect_fish_SS3_120_480[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
+                          isolation_effect_fish_SS3_120_480[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons]))),
+            c(as.matrix(c(isolation_effect_fish_SS3_upper_120_480[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
+                          isolation_effect_fish_SS3_upper_120_480[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons]))),
+            c(as.matrix(c(isolation_effect_fish_SS3_lower_120_480[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
+                          isolation_effect_fish_SS3_lower_120_480[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons]))),
+            species_labels = c(names(isolation_effect_fish_SS3_120_480[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred]),
+                               names(isolation_effect_fish_SS3_120_480[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons])),
+            xlab = "Effect on abundance",
+            main = "120 to 480 - SS3", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
+```
+
+<img src="man/figures/README-unnamed-chunk-19-1.png" width="100%" />
+
+For trophic level.
+
+``` r
+par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
+
+My_coefplot(c(as.matrix(rev(trait_30_120_fish_SS3))),
+            c(as.matrix(rev(trait_30_120_fish_SS3_upper))),
+            c(as.matrix(rev(trait_30_120_fish_SS3_lower))),
+            species_labels = c("Predators", "Non Predators"),
+            xlab = NULL,
+            main = "30 m to 120 m - SS3 - FISH", cex.axis = 0.8, cex.main = 0.8, y_spa = 0.25, rect = T, rect_lim = 1)
+
+My_coefplot(c(as.matrix(rev(trait_30_480_fish_SS3))),
+            c(as.matrix(rev(trait_30_480_fish_SS3_upper))),
+            c(as.matrix(rev(trait_30_480_fish_SS3_lower))),
+            species_labels = c("Predators", "Non Predators"),
+            xlab = NULL,
+            main = "30 m to 480 m- SS3 - FISH", cex.axis = 0.8, cex.main = 0.8, y_spa = 0.25, rect = T, rect_lim = 1)
+
+My_coefplot(c(as.matrix(rev(trait_120_480_fish_SS3))),
+            c(as.matrix(rev(trait_120_480_fish_SS3_upper))),
+            c(as.matrix(rev(trait_120_480_fish_SS3_lower))),
+            species_labels = c("Predators", "Non Predators"),
+            xlab = NULL,
+            main = "120 m to 480 m - SS3 - FISH", cex.axis = 0.8, cex.main = 0.8, y_spa = 0.25, rect = T, rect_lim = 1)
+```
+
+<img src="man/figures/README-unnamed-chunk-20-1.png" width="100%" />
 
 ## Testing for differences in distances of centroids of fish and fishless treatments in different isolation treatments.
 
@@ -840,5 +1411,5 @@ plot_null(com_SS3_incomplete, nperm = 15 ,x1 = fish_SS3_incomplete, x2 = isolati
 #> [1] "Original GLLVM fit finished"
 ```
 
-<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" /> It
+<img src="man/figures/README-unnamed-chunk-21-1.png" width="100%" /> It
 seems like everything is ok.

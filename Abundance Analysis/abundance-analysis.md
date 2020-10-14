@@ -8,17 +8,20 @@ statistical analysis presented in “Pelinson et al 2020. Top predator
 introduction changes the effects of spatial isolation on freshwater
 community structure”
 
-## Installation
-
 You can install the last version of `pelinson.et.al.2020` package from
 my [GitHub](https://github.com/RodolfoPelinson/pelinson.et.al.2020)
 with:
 
 ``` r
-#install.packages("devtools")
-#devtools::install_github("RodolfoPelinson/pelinson.et.al.2020")
-library(pelinson.et.al.2020)
+install.packages("devtools")
+devtools::install_github("RodolfoPelinson/pelinson.et.al.2020")
+library("pelinson.et.al.2020")
 ```
+
+This will give you access to all the data and functions used to produce
+the results shown in “Pelinson et al 2020. Top predator introduction
+changes the effects of spatial isolation on freshwater community
+structure”.
 
 Other packages used here are:  
 `lme4` version 1.1-23  
@@ -28,11 +31,6 @@ Other packages used here are:
 library(lme4)
 library(emmeans)
 ```
-
-This will give you access to all the data and functions used to produce
-the results shown in “Pelinson et al 2020. Top predator introduction
-changes the effects of spatial isolation on freshwater community
-structure”.
 
 ## Testing for differences in abundance
 

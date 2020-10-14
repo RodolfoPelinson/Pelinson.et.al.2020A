@@ -120,7 +120,7 @@ anova_MEMs_only
 ```
 
 
-It seems that MEM1 is important! However, if look at the figure showing the MEM1, it seems to capture spatial patterns that are caused by our isolation treatments. Lets see if it remains important after accounting for effect of treatments:
+It seems that MEM1 is important! However, if we look at the figure showing the MEM1, it seems to capture spatial patterns that are caused by our isolation treatments. Lets see if it remains important after accounting for effect of treatments:
 
 ```{r second LR, cache = T}
 fit_SS3_no_effect <- manyglm(com_SS3_mvabund ~  1, family = "negative.binomial")

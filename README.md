@@ -16,7 +16,7 @@ DOI: <https://doi.org/10.1101/857318>
 The analyses were divided in three different sections:
 
 [Abundance
-Analysis](https://github.com/RodolfoPelinson/pelinson.et.al.2020/blob/master/Abundance%20Analysis/abundance-analysis.md)  
+Analysis](https://github.com/RodolfoPelinson/pelinson.et.al.2020/blob/master/Abundance%20Analysis/Abundance-Analysis.md)  
 [Community
 Structure](https://github.com/RodolfoPelinson/pelinson.et.al.2020/blob/master/Community%20Structure/Community-Structure.md)  
 [Spatial Autocorrelation

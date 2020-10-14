@@ -79,7 +79,7 @@ dbMEM_exp1 <- dbmem(dist(coord), silent = F, thresh = dist_60m)
 ```
 
     ## User-provided truncation threshold = 0.0005808447 
-    ## Time to compute dbMEMs = 0.000000  sec
+    ## Time to compute dbMEMs = 0.020000  sec
 
 ``` r
 rownames(dbMEM_exp1) <- rownames(coord)
@@ -168,10 +168,10 @@ anova_MEMs_only
     ##  Test statistics calculated assuming uncorrelated response (for faster computation) 
     ##  P-value calculated using 10000 iterations via PIT-trap resampling.
 
-It seems that MEM1 is important\! However, if look at the figure showing
-the MEM1, it seems to capture spatial patterns that are caused by our
-isolation treatments. Lets see if it remains important after accounting
-for effect of treatments:
+It seems that MEM1 is important\! However, if we look at the figure
+showing the MEM1, it seems to capture spatial patterns that are caused
+by our isolation treatments. Lets see if it remains important after
+accounting for effect of treatments:
 
 ``` r
 fit_SS3_no_effect <- manyglm(com_SS3_mvabund ~  1, family = "negative.binomial")

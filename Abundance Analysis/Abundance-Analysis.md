@@ -48,8 +48,60 @@ data(ID)
 This is for testing for differences in the abundance of predatory
 insects across all treatments and sampling surveys. We used generalized
 linear mixed models with a negative binomial distribution (`glmer.nb`
-function from package `lme4`) to fit the models. Then we used `anova`
-from package `lme4` to compute likelihood ratio tests.
+function from package `lme4`) to fit the models.
+
+First we looked for the best probability distribution to model our
+abundance data. We considered Gaussian, Poisson and Negative Binomial
+distributions.
+
+``` r
+NB_model <- glmer.nb(abundance_predators~(survey + fish + isolation + survey:fish + survey:isolation + fish:isolation + survey:fish:isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+
+P_model <- glmer(abundance_predators~(survey + fish + isolation + survey:fish + survey:isolation + fish:isolation + survey:fish:isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"), family = "poisson")
+
+G_model <- lmer(abundance_predators~(survey + fish + isolation + survey:fish + survey:isolation + fish:isolation + survey:fish:isolation) + (1|ID), data = treatments, control = lmerControl(optimizer = "bobyqa"), REML = F)
+
+plot(G_model, main = "Gaussian")
+```
+
+![](Abundance-Analysis_files/figure-gfm/checking%20distribution%20predators-1.png)<!-- -->
+
+``` r
+plot(P_model, main = "Poisson")
+```
+
+![](Abundance-Analysis_files/figure-gfm/checking%20distribution%20predators-2.png)<!-- -->
+
+``` r
+plot(NB_model, main = "Negative Binomial")
+```
+
+![](Abundance-Analysis_files/figure-gfm/checking%20distribution%20predators-3.png)<!-- -->
+
+``` r
+AIC(G_model)
+```
+
+    ## [1] 615.2215
+
+``` r
+AIC(P_model)
+```
+
+    ## [1] 561.9705
+
+``` r
+AIC(NB_model)
+```
+
+    ## [1] 524.5077
+
+We chose to use the Negative Binomial distribution to model data after
+inspecting AIC values (Negative Binomial had the lowest value) for each
+model and the spread of Pearson residuals against fitted values.
+
+Then we used `anova` from package `lme4` to compute likelihood ratio
+tests.
 
 ``` r
 `pred_no_effect` <- glmer.nb(abundance_predators~ 1 + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
@@ -169,7 +221,56 @@ emmeans(`pred_survey:fish:isolation`, list(pairwise ~ isolation), adjust = "sida
     ## Results are given on the log (not the response) scale. 
     ## P value adjustment: sidak method for 3 tests
 
-Same thing now for herbivores and detritivores.
+Same thing now for herbivores and detritivores.  
+Again, we first looked for the best probability distribution to model
+our abundance data. We considered Gaussian, Poisson and Negative
+Binomial distributions.
+
+``` r
+NB_model <- glmer.nb(abundance_consumers~(survey + fish + isolation + survey:fish + survey:isolation + fish:isolation + survey:fish:isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+
+P_model <- glmer(abundance_consumers~(survey + fish + isolation + survey:fish + survey:isolation + fish:isolation + survey:fish:isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"), family = "poisson")
+
+G_model <- lmer(abundance_consumers~(survey + fish + isolation + survey:fish + survey:isolation + fish:isolation + survey:fish:isolation) + (1|ID), data = treatments, control = lmerControl(optimizer = "bobyqa"), REML = F)
+
+plot(G_model, main = "Gaussian")
+```
+
+![](Abundance-Analysis_files/figure-gfm/checking%20distribution%20non%20predators-1.png)<!-- -->
+
+``` r
+plot(P_model, main = "Poisson")
+```
+
+![](Abundance-Analysis_files/figure-gfm/checking%20distribution%20non%20predators-2.png)<!-- -->
+
+``` r
+plot(NB_model, main = "Negative Binomial")
+```
+
+![](Abundance-Analysis_files/figure-gfm/checking%20distribution%20non%20predators-3.png)<!-- -->
+
+``` r
+AIC(G_model)
+```
+
+    ## [1] 932.6185
+
+``` r
+AIC(P_model)
+```
+
+    ## [1] 1883.008
+
+``` r
+AIC(NB_model)
+```
+
+    ## [1] 780.8463
+
+We, again, chose to use the Negative Binomial distribution to model data
+after inspecting AIC values (Negative Binomial had the lowest value) for
+each model and the spread of Pearson residuals against fitted values.
 
 ``` r
 `cons_no_effect` <- glmer.nb(abundance_consumers~ 1 + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))

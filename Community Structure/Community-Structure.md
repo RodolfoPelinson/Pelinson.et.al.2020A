@@ -73,11 +73,42 @@ control <- permute::how(within = permute::Within(type = 'free'),
 permutations <- shuffleSet(nrow(com_incomplete), control = control)
 ```
 
-Now running the models and multivariate Likelihood Ratio Tests.
+Before running the models, we looked for the best probability
+distribution to model our community data (abundance). We considered
+Poisson and Negative Binomial distributions.
 
 ``` r
 com_incomplete_mvabund <- mvabund(com_incomplete)
 
+meanvar.plot(com_incomplete_mvabund, table =F, pch = 16) 
+
+abline(a = 0, b = 1, lwd = 2)
+box(lwd = 2)
+```
+
+![](Community-Structure_files/figure-gfm/checking%20distribution-1.png)<!-- -->
+
+``` r
+fit_incosistent_interaction_NB <- manyglm(com_incomplete_mvabund ~ survey_incomplete * (fish_incomplete * isolation_incomplete), family = "negative.binomial", cor.type = "I")
+fit_incosistent_interaction_POIS <- manyglm(com_incomplete_mvabund ~ survey_incomplete * (fish_incomplete * isolation_incomplete), family = "poisson", cor.type = "I")
+
+plot(fit_incosistent_interaction_POIS)
+```
+
+![](Community-Structure_files/figure-gfm/checking%20distribution-2.png)<!-- -->
+
+``` r
+plot(fit_incosistent_interaction_NB)
+```
+
+![](Community-Structure_files/figure-gfm/checking%20distribution-3.png)<!-- -->
+We chose to use the Negative Binomial distribution to model data after
+inspecting plots of variances against means and the spread of Dunn-Smyth
+residuals against fitted values.
+
+Now running the models and multivariate Likelihood Ratio Tests.
+
+``` r
 fit_no_effect <- manyglm(com_incomplete_mvabund ~ 1, family = "negative.binomial", cor.type = "I")
 fit_Time <- manyglm(com_incomplete_mvabund ~ survey_incomplete, family = "negative.binomial", cor.type = "I")
 fit_Time_fish <- manyglm(com_incomplete_mvabund ~ survey_incomplete + fish_incomplete, family = "negative.binomial", cor.type = "I")
@@ -96,7 +127,7 @@ anova_incomplete <- anova(fit_no_effect,
 ```
 
     ## Using <int> bootID matrix from input. 
-    ## Time elapsed: 0 hr 28 min 14 sec
+    ## Time elapsed: 0 hr 28 min 36 sec
 
 ``` r
 anova_incomplete

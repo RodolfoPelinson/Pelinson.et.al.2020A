@@ -1,4 +1,4 @@
-abundance\_analysis
+Abundance Analysis
 ================
 Rodolfo Pelinson
 14/10/2020
@@ -20,7 +20,8 @@ with:
 library(pelinson.et.al.2020)
 ```
 
-Other packages used here are: `lme4` version 1.1-23  
+Other packages used here are:  
+`lme4` version 1.1-23  
 `emmeans` version 1.4.8
 
 ``` r
@@ -353,3 +354,165 @@ emmeans(`cons_survey:fish:isolation`, list(pairwise ~ isolation|survey), adjust 
     ## Results are averaged over the levels of: fish 
     ## Results are given on the log (not the response) scale. 
     ## P value adjustment: sidak method for 3 tests
+
+Finaly, we can plot the abundances of predators and
+herbivores/detritivores for each survey.
+
+``` r
+abundance_SS1_predators <- abundance_predators[which(survey == "1")]
+abundance_SS2_predators <- abundance_predators[which(survey == "2")]
+abundance_SS3_predators <- abundance_predators[which(survey == "3")]
+
+abundance_SS1_consumers <- abundance_consumers[which(survey == "1")]
+abundance_SS2_consumers <- abundance_consumers[which(survey == "2")]
+abundance_SS3_consumers <- abundance_consumers[which(survey == "3")]
+
+par(mfrow = c(1,2))
+
+boxplot(abundance_SS1_predators~fish_isolation_SS1, outline = F, ylab = "Abundance", xlab = "", at = c(1,2,3,5,6,7), lwd = 1.5, ylim = c(0,240), col = "transparent", main = "First Survey - Predators", xaxt="n")
+mylevels <- levels(fish_isolation_SS1)
+levelProportions <- summary(fish_isolation_SS1)/length(fish_isolation_SS1)
+col <- c(c("sienna1","sienna3","sienna4"), c("steelblue1","steelblue3","steelblue4"))
+#bg <- c(rep("sienna3",3), rep("dodgerblue3",3),rep("sienna3",3), rep("dodgerblue3",3))
+pch <- c(15,16,17,15,16,17)
+for(i in 1:length(mylevels)){
+  
+  x<- c(1,2,3,5,6,7)[i]
+  thislevel <- mylevels[i]
+  thisvalues <- abundance_SS1_predators[fish_isolation_SS1==thislevel]
+  
+  # take the x-axis indices and add a jitter, proportional to the N in each level
+  myjitter <- jitter(rep(x, length(thisvalues)), amount=levelProportions[i]/0.8)
+  points(myjitter, thisvalues, pch=pch[i], col=col[i] , cex = 1.5, lwd = 3) 
+  
+}
+boxplot(abundance_SS1_predators~fish_isolation_SS1, add = T, col = "transparent", outline = F,at = c(1,2,3,5,6,7), lwd = 1.5, xaxt="n")
+axis(1,labels = c("30m", "120m", "480m","30m", "120m", "480m"), cex.axis = 0.8, at =c(1,2,3,5,6,7))
+axis(1,labels = c("Fishless","Fish"), cex.axis = 1, at =c(2,6), line = 1.5, tick = F )
+box(lwd = 2.5)
+
+
+boxplot(abundance_SS1_consumers~fish_isolation_SS1, outline = F, ylab = "Abundance", xlab = "", at = c(1,2,3,5,6,7), lwd = 1.5, ylim = c(0,1250), col = "transparent", main = "First Survey - Non Predators", xaxt="n")
+mylevels <- levels(fish_isolation_SS1)
+levelProportions <- summary(fish_isolation_SS1)/length(fish_isolation_SS1)
+col <- c(c("sienna1","sienna3","sienna4"), c("steelblue1","steelblue3","steelblue4"))
+#bg <- c(rep("sienna3",3), rep("dodgerblue3",3),rep("sienna3",3), rep("dodgerblue3",3))
+pch <- c(15,16,17,15,16,17)
+for(i in 1:length(mylevels)){
+  
+  x<- c(1,2,3,5,6,7)[i]
+  thislevel <- mylevels[i]
+  thisvalues <- abundance_SS1_consumers[fish_isolation_SS1==thislevel]
+  
+  # take the x-axis indices and add a jitter, proportional to the N in each level
+  myjitter <- jitter(rep(x, length(thisvalues)), amount=levelProportions[i]/0.8)
+  points(myjitter, thisvalues, pch=pch[i], col=col[i] , cex = 1.5, lwd = 3) 
+  
+}
+boxplot(abundance_SS1_consumers~fish_isolation_SS1, add = T, col = "transparent", outline = F,at = c(1,2,3,5,6,7), lwd = 1.5, xaxt="n")
+axis(1,labels = c("30m", "120m", "480m","30m", "120m", "480m"), cex.axis = 0.8, at =c(1,2,3,5,6,7))
+axis(1,labels = c("Fishless","Fish"), cex.axis = 1, at =c(2,6), line = 1.5, tick = F )
+box(lwd = 2.5)
+```
+
+![](abundance-analysis_files/figure-gfm/plotting%20abundances-1.png)<!-- -->
+
+``` r
+boxplot(abundance_SS2_predators~fish_isolation_SS2, outline = F, ylab = "Abundance", xlab = "", at = c(1,2,3,5,6,7), lwd = 1.5, ylim = c(0,240), col = "transparent", main = "Second Survey - Predators", xaxt="n")
+mylevels <- levels(fish_isolation_SS2)
+levelProportions <- summary(fish_isolation_SS2)/length(fish_isolation_SS2)
+col <- c(c("sienna1","sienna3","sienna4"), c("steelblue1","steelblue3","steelblue4"))
+#bg <- c(rep("sienna3",3), rep("dodgerblue3",3),rep("sienna3",3), rep("dodgerblue3",3))
+pch <- c(15,16,17,15,16,17)
+for(i in 1:length(mylevels)){
+  
+  x<- c(1,2,3,5,6,7)[i]
+  thislevel <- mylevels[i]
+  thisvalues <- abundance_SS2_predators[fish_isolation_SS2==thislevel]
+  
+  # take the x-axis indices and add a jitter, proportional to the N in each level
+  myjitter <- jitter(rep(x, length(thisvalues)), amount=levelProportions[i]/0.8)
+  points(myjitter, thisvalues, pch=pch[i], col=col[i] , cex = 1.5, lwd = 3) 
+  
+}
+boxplot(abundance_SS2_predators~fish_isolation_SS2, add = T, col = "transparent", outline = F,at = c(1,2,3,5,6,7), lwd = 1.5, xaxt="n")
+axis(1,labels = c("30m", "120m", "480m","30m", "120m", "480m"), cex.axis = 0.8, at =c(1,2,3,5,6,7))
+axis(1,labels = c("Fishless","Fish"), cex.axis = 1, at =c(2,6), line = 1.5, tick = F )
+box(lwd = 2.5)
+
+
+
+boxplot(abundance_SS2_consumers~fish_isolation_SS2, outline = F, ylab = "Abundance", xlab = "", at = c(1,2,3,5,6,7), lwd = 1.5, ylim = c(0,1250), col = "transparent", main = "Second Survey - Non Predators", xaxt="n")
+mylevels <- levels(fish_isolation_SS2)
+levelProportions <- summary(fish_isolation_SS2)/length(fish_isolation_SS2)
+col <- c(c("sienna1","sienna3","sienna4"), c("steelblue1","steelblue3","steelblue4"))
+#bg <- c(rep("sienna3",3), rep("dodgerblue3",3),rep("sienna3",3), rep("dodgerblue3",3))
+pch <- c(15,16,17,15,16,17)
+for(i in 1:length(mylevels)){
+  
+  x<- c(1,2,3,5,6,7)[i]
+  thislevel <- mylevels[i]
+  thisvalues <- abundance_SS2_consumers[fish_isolation_SS2==thislevel]
+  
+  # take the x-axis indices and add a jitter, proportional to the N in each level
+  myjitter <- jitter(rep(x, length(thisvalues)), amount=levelProportions[i]/0.8)
+  points(myjitter, thisvalues, pch=pch[i], col=col[i] , cex = 1.5, lwd = 3) 
+  
+}
+boxplot(abundance_SS2_consumers~fish_isolation_SS2, add = T, col = "transparent", outline = F,at = c(1,2,3,5,6,7), lwd = 1.5, xaxt="n")
+axis(1,labels = c("30m", "120m", "480m","30m", "120m", "480m"), cex.axis = 0.8, at =c(1,2,3,5,6,7))
+axis(1,labels = c("Fishless","Fish"), cex.axis = 1, at =c(2,6), line = 1.5, tick = F )
+box(lwd = 2.5)
+```
+
+![](abundance-analysis_files/figure-gfm/plotting%20abundances-2.png)<!-- -->
+
+``` r
+boxplot(abundance_SS3_predators~fish_isolation_SS3, outline = F, ylab = "Abundance", xlab = "", at = c(1,2,3,5,6,7), lwd = 1.5, ylim = c(0,240), col = "transparent", main = "Third Survey - Predators", xaxt="n")
+mylevels <- levels(fish_isolation_SS3)
+levelProportions <- summary(fish_isolation_SS3)/length(fish_isolation_SS3)
+col <- c(c("sienna1","sienna3","sienna4"), c("steelblue1","steelblue3","steelblue4"))
+#bg <- c(rep("sienna3",3), rep("dodgerblue3",3),rep("sienna3",3), rep("dodgerblue3",3))
+pch <- c(15,16,17,15,16,17)
+for(i in 1:length(mylevels)){
+  
+  x<- c(1,2,3,5,6,7)[i]
+  thislevel <- mylevels[i]
+  thisvalues <- abundance_SS3_predators[fish_isolation_SS3==thislevel]
+  
+  # take the x-axis indices and add a jitter, proportional to the N in each level
+  myjitter <- jitter(rep(x, length(thisvalues)), amount=levelProportions[i]/0.8)
+  points(myjitter, thisvalues, pch=pch[i], col=col[i] , cex = 1.5, lwd = 3) 
+  
+}
+boxplot(abundance_SS3_predators~fish_isolation_SS3, add = T, col = "transparent", outline = F,at = c(1,2,3,5,6,7), lwd = 1.5, xaxt="n")
+axis(1,labels = c("30m", "120m", "480m","30m", "120m", "480m"), cex.axis = 0.8, at =c(1,2,3,5,6,7))
+axis(1,labels = c("Fishless","Fish"), cex.axis = 1, at =c(2,6), line = 1.5, tick = F )
+box(lwd = 2.5)
+
+
+
+boxplot(abundance_SS3_consumers~fish_isolation_SS3, outline = F, ylab = "Abundance", xlab = "", at = c(1,2,3,5,6,7), lwd = 1.5, ylim = c(0,1250), col = "transparent", main = "Third Survey - Non Predators", xaxt="n")
+mylevels <- levels(fish_isolation_SS3)
+levelProportions <- summary(fish_isolation_SS3)/length(fish_isolation_SS3)
+col <- c(c("sienna1","sienna3","sienna4"), c("steelblue1","steelblue3","steelblue4"))
+#bg <- c(rep("sienna3",3), rep("dodgerblue3",3),rep("sienna3",3), rep("dodgerblue3",3))
+pch <- c(15,16,17,15,16,17)
+for(i in 1:length(mylevels)){
+  
+  x<- c(1,2,3,5,6,7)[i]
+  thislevel <- mylevels[i]
+  thisvalues <- abundance_SS3_consumers[fish_isolation_SS3==thislevel]
+  
+  # take the x-axis indices and add a jitter, proportional to the N in each level
+  myjitter <- jitter(rep(x, length(thisvalues)), amount=levelProportions[i]/0.8)
+  points(myjitter, thisvalues, pch=pch[i], col=col[i] , cex = 1.5, lwd = 3) 
+  
+}
+boxplot(abundance_SS3_consumers~fish_isolation_SS3, add = T, col = "transparent", outline = F,at = c(1,2,3,5,6,7), lwd = 1.5, xaxt="n")
+axis(1,labels = c("30m", "120m", "480m","30m", "120m", "480m"), cex.axis = 0.8, at =c(1,2,3,5,6,7))
+axis(1,labels = c("Fishless","Fish"), cex.axis = 1, at =c(2,6), line = 1.5, tick = F )
+box(lwd = 2.5)
+```
+
+![](abundance-analysis_files/figure-gfm/plotting%20abundances-3.png)<!-- -->

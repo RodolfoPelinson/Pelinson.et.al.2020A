@@ -1,41 +1,50 @@
+abundance\_analysis
+================
+Rodolfo Pelinson
+14/10/2020
+
 The goal of pelinson.et.al.2020 is to walk the user through the
 statistical analysis presented in “Pelinson et al 2020. Top predator
 introduction changes the effects of spatial isolation on freshwater
 community structure”
 
-Installation
-------------
+## Installation
 
 You can install the last version of `pelinson.et.al.2020` package from
 my [GitHub](https://github.com/RodolfoPelinson/pelinson.et.al.2020)
 with:
 
-    #install.packages("devtools")
-    #devtools::install_github("RodolfoPelinson/pelinson.et.al.2020")
-    library(pelinson.et.al.2020)
+``` r
+#install.packages("devtools")
+#devtools::install_github("RodolfoPelinson/pelinson.et.al.2020")
+library(pelinson.et.al.2020)
+```
 
 Other packages used here are: `lme4` version 1.1-23  
 `emmeans` version 1.4.8
 
-    library(lme4)
-    library(emmeans)
+``` r
+library(lme4)
+library(emmeans)
+```
 
 This will give you access to all the data and functions used to produce
 the results shown in “Pelinson et al 2020. Top predator introduction
 changes the effects of spatial isolation on freshwater community
 structure”.
 
-Testing for differences in abundance
-------------------------------------
+## Testing for differences in abundance
 
 First, lets load the necessary data.
 
-    data(abundance_predators)
-    data(abundance_consumers)
-    data(survey)
-    data(fish)
-    data(isolation)
-    data(ID)
+``` r
+data(abundance_predators)
+data(abundance_consumers)
+data(survey)
+data(fish)
+data(isolation)
+data(ID)
+```
 
 This is for testing for differences in the abundance of predatory
 insects across all treatments and sampling surveys. We used generalized
@@ -43,25 +52,27 @@ linear mixed models with a negative binomial distribution (`glmer.nb`
 function from package `lme4`) to fit the models. Then we used `anova`
 from package `lme4` to compute likelihood ratio tests.
 
-    `pred_no_effect` <- glmer.nb(abundance_predators~ 1 + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
-    `pred_survey` <- glmer.nb(abundance_predators~(survey) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
-    `pred_fish` <- glmer.nb(abundance_predators~(survey+fish) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
-    `pred_isolation` <- glmer.nb(abundance_predators~(survey+fish+isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
-    `pred_survey:fish` <- glmer.nb(abundance_predators~(survey + fish + isolation + survey:fish) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
-    `pred_survey:isolation` <- glmer.nb(abundance_predators~(survey + fish + isolation + survey:fish + survey:isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
-    `pred_fish:isolation` <- glmer.nb(abundance_predators~(survey + fish + isolation + survey:fish + survey:isolation + fish:isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
-    `pred_survey:fish:isolation` <- glmer.nb(abundance_predators~(survey + fish + isolation + survey:fish + survey:isolation + fish:isolation + survey:fish:isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+``` r
+`pred_no_effect` <- glmer.nb(abundance_predators~ 1 + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`pred_survey` <- glmer.nb(abundance_predators~(survey) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`pred_fish` <- glmer.nb(abundance_predators~(survey+fish) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`pred_isolation` <- glmer.nb(abundance_predators~(survey+fish+isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`pred_survey:fish` <- glmer.nb(abundance_predators~(survey + fish + isolation + survey:fish) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`pred_survey:isolation` <- glmer.nb(abundance_predators~(survey + fish + isolation + survey:fish + survey:isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`pred_fish:isolation` <- glmer.nb(abundance_predators~(survey + fish + isolation + survey:fish + survey:isolation + fish:isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`pred_survey:fish:isolation` <- glmer.nb(abundance_predators~(survey + fish + isolation + survey:fish + survey:isolation + fish:isolation + survey:fish:isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
 
-    Anova_predators <- anova(`pred_no_effect`, 
-          `pred_survey`,
-          `pred_fish`,
-          `pred_isolation`,
-          `pred_survey:fish`,
-          `pred_survey:isolation`,
-          `pred_fish:isolation`,
-          `pred_survey:fish:isolation`)
+Anova_predators <- anova(`pred_no_effect`, 
+      `pred_survey`,
+      `pred_fish`,
+      `pred_isolation`,
+      `pred_survey:fish`,
+      `pred_survey:isolation`,
+      `pred_fish:isolation`,
+      `pred_survey:fish:isolation`)
 
-    Anova_predators
+Anova_predators
+```
 
     ## Data: treatments
     ## Models:
@@ -105,7 +116,9 @@ survey and isolation, separately. *Post-hoc* tests were always applied
 to the most complex model to account for the effect of all possible
 interactions.
 
-    emmeans(`pred_survey:fish:isolation`, list(pairwise ~ survey), adjust = "sidak") 
+``` r
+emmeans(`pred_survey:fish:isolation`, list(pairwise ~ survey), adjust = "sidak") 
+```
 
     ## NOTE: Results may be misleading due to involvement in interactions
 
@@ -130,7 +143,9 @@ interactions.
     ## Results are given on the log (not the response) scale. 
     ## P value adjustment: sidak method for 3 tests
 
-    emmeans(`pred_survey:fish:isolation`, list(pairwise ~ isolation), adjust = "sidak") 
+``` r
+emmeans(`pred_survey:fish:isolation`, list(pairwise ~ isolation), adjust = "sidak") 
+```
 
     ## NOTE: Results may be misleading due to involvement in interactions
 
@@ -157,24 +172,26 @@ interactions.
 
 Same thing now for herbivores and detritivores.
 
-    `cons_no_effect` <- glmer.nb(abundance_consumers~ 1 + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
-    `cons_survey` <- glmer.nb(abundance_consumers~(survey) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
-    `cons_fish` <- glmer.nb(abundance_consumers~(survey+fish) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
-    `cons_isolation` <- glmer.nb(abundance_consumers~(survey+fish+isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
-    `cons_survey:fish` <- glmer.nb(abundance_consumers~(survey + fish + isolation + survey:fish) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
-    `cons_survey:isolation` <- glmer.nb(abundance_consumers~(survey + fish + isolation + survey:fish + survey:isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
-    `cons_fish:isolation` <- glmer.nb(abundance_consumers~(survey + fish + isolation + survey:fish + survey:isolation + fish:isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
-    `cons_survey:fish:isolation` <- glmer.nb(abundance_consumers~(survey + fish + isolation + survey:fish + survey:isolation + fish:isolation + survey:fish:isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+``` r
+`cons_no_effect` <- glmer.nb(abundance_consumers~ 1 + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`cons_survey` <- glmer.nb(abundance_consumers~(survey) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`cons_fish` <- glmer.nb(abundance_consumers~(survey+fish) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`cons_isolation` <- glmer.nb(abundance_consumers~(survey+fish+isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`cons_survey:fish` <- glmer.nb(abundance_consumers~(survey + fish + isolation + survey:fish) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`cons_survey:isolation` <- glmer.nb(abundance_consumers~(survey + fish + isolation + survey:fish + survey:isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`cons_fish:isolation` <- glmer.nb(abundance_consumers~(survey + fish + isolation + survey:fish + survey:isolation + fish:isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
+`cons_survey:fish:isolation` <- glmer.nb(abundance_consumers~(survey + fish + isolation + survey:fish + survey:isolation + fish:isolation + survey:fish:isolation) + (1|ID), data = treatments, control = glmerControl(optimizer = "bobyqa"))
 
-    Anova_consumers <- anova(`cons_no_effect`, 
-          `cons_survey`,
-          `cons_fish`,
-          `cons_isolation`,
-          `cons_survey:fish`,
-          `cons_survey:isolation`,
-          `cons_fish:isolation`,
-          `cons_survey:fish:isolation`)
-    Anova_consumers
+Anova_consumers <- anova(`cons_no_effect`, 
+      `cons_survey`,
+      `cons_fish`,
+      `cons_isolation`,
+      `cons_survey:fish`,
+      `cons_survey:isolation`,
+      `cons_fish:isolation`,
+      `cons_survey:fish:isolation`)
+Anova_consumers
+```
 
     ## Data: treatments
     ## Models:
@@ -216,7 +233,9 @@ Now *post-hoc* tests to identify pairwise differences for the effect of
 sampling survey, and interaction between isolation and survey, and
 between isolation and presence of fish:
 
-    emmeans(`cons_survey:fish:isolation`, list(pairwise ~ survey), adjust = "sidak") 
+``` r
+emmeans(`cons_survey:fish:isolation`, list(pairwise ~ survey), adjust = "sidak") 
+```
 
     ## NOTE: Results may be misleading due to involvement in interactions
 
@@ -241,7 +260,9 @@ between isolation and presence of fish:
     ## Results are given on the log (not the response) scale. 
     ## P value adjustment: sidak method for 3 tests
 
-    emmeans(`cons_survey:fish:isolation`, list(pairwise ~ isolation|fish), adjust = "sidak") 
+``` r
+emmeans(`cons_survey:fish:isolation`, list(pairwise ~ isolation|fish), adjust = "sidak") 
+```
 
     ## NOTE: Results may be misleading due to involvement in interactions
 
@@ -280,7 +301,9 @@ between isolation and presence of fish:
     ## Results are given on the log (not the response) scale. 
     ## P value adjustment: sidak method for 3 tests
 
-    emmeans(`cons_survey:fish:isolation`, list(pairwise ~ isolation|survey), adjust = "sidak") 
+``` r
+emmeans(`cons_survey:fish:isolation`, list(pairwise ~ isolation|survey), adjust = "sidak") 
+```
 
     ## NOTE: Results may be misleading due to involvement in interactions
 

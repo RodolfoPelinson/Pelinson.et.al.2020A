@@ -30,28 +30,37 @@ library("pelinson.et.al.2020")
 
 
 Other packages used here are:  
-`lme4` version 1.1-23  
-`emmeans` version 1.4.8  
+`adegraphics` version 1.0-15  
+`adespatial` version 0.3-8  
+`ade4` version 1.7-15  
+`mvabund` version 4.1.3  
 
 ``` {r installing packages2, eval = T, results = "hide", warning = F, message = F}
 library(adegraphics)
 library(adespatial)
 library(ade4)
+library(mvabund)
 ```
 
 
 
 ## Spatial Autocorrelation Analisis
 
-```{r}
-data(coord)
-```
+Due to inevitable practical constraints, one limitation of our experimental design is that experimental units were not fully spatially isolated from each other. That is, one might hypothesize that as local insect populations build up over time and emerge from ponds, they may affect the local dynamics of neighboring ponds. We, therefore, tested whether the spatial configuration of the experimental ponds could explain the community structures we observed at the end of our experiment (i.e. last survey). To do so, we computed artificial spatial variables using distance-based Moran’s Eigenvector Maps (MEMs). 
 
+Loading necessary data.
+```{r loading data}
+data(coord)
+data(com_SS3)
+com_SS3_mvabund <- mvabund(com_SS3)
+data(isolation_SS3)
+data(fish_SS3)
+```
 
 
 First we have to define a threshold distance to truncate the distance matrix. We chose 60m as threshold. Thus I measured the distance between ponds A1 and A2, which was 28 meters, to find how much 60 meters mean in our xy coordinate matrix.
 
-```{r}
+```{r dist60}
 DistA1_A2_meters <- 28
 DistA1_A2_decimals <- dist(coord)[1]
 dist_60m <- (60*DistA1_A2_decimals)/28
@@ -59,14 +68,14 @@ dist_60m
 ```
 
 Now we create the distance based Moran Eigenvector Maps (dbMEMs):
-```{r}
+```{r dbMEMs}
 dbMEM_exp1 <- dbmem(dist(coord), silent = F, thresh = dist_60m)
 rownames(dbMEM_exp1) <- rownames(coord)
 ```
 
 
 We can plot our ponds and see wich ones were considered conected with a 60 meter truncation distance:
-```{r, dpi = 150, fig.width = 15}
+```{r plotting ponds, dpi = 150, fig.width=6,fig.height=7}
 adegraphics::s.label(coord, nb = attr(dbMEM_exp1, "listw"), xax = 2, yax = 1, plabels = list(cex = 1, boxes = list(col = "grey90")), 
                      ylim = c(-22.8092,-22.8045), xlim = c(-49.1908, -49.1870))
 
@@ -76,30 +85,63 @@ adegraphics::s.label(coord, nb = attr(dbMEM_exp1, "listw"), xax = 2, yax = 1, pl
 We endded up with 4 MEMs. We can plot then to see what patterns each one account for:
 
 MEM1
-```{r MEM1, fig.width=5,fig.height=7}
+```{r MEM1, fig.width=5,fig.height=7,dpi = 150}
 sr_value(coord, dbMEM_exp1[,1], ylim = c(-22.81,-22.804), xlim = c(-49.19057, -49.18725), grid=T, csize = 0.8, clegend = 1.5, xax = 2, yax = 1, method = "bubble")
 ```
 
 MEM2
-```{r MEM2, fig.width=5,fig.height=7}
+```{r MEM2, fig.width=5,fig.height=7,dpi = 150}
 sr_value(coord, dbMEM_exp1[,2], ylim = c(-22.81,-22.804), xlim = c(-49.19057, -49.18725), grid=T, csize = 0.8, clegend = 1.5, xax = 2, yax = 1, method = "bubble")
 ```
 
 MEM3
-```{r MEM3, fig.width=5,fig.height=7}
+```{r MEM3, fig.width=5,fig.height=7,dpi = 150}
 sr_value(coord, dbMEM_exp1[,3], ylim = c(-22.81,-22.804), xlim = c(-49.19057, -49.18725), grid=T, csize = 0.8, clegend = 1.5, xax = 2, yax = 1, method = "bubble")
 ```
 
 MEM4
-```{r MEM4, fig.width=5,fig.height=7}
+```{r MEM4, fig.width=5,fig.height=7,dpi = 150}
 sr_value(coord, dbMEM_exp1[,4], ylim = c(-22.81,-22.804), xlim = c(-49.19057, -49.18725), grid=T, csize = 0.8, clegend = 1.5, xax = 2, yax = 1, method = "bubble")
 
 ```
 
 
 Before analyzing the data, we remove the ponds for wich we do not have community data:
-```{r}
+```{r removing ponds}
 dbMEM_exp1 <- dbMEM_exp1[which(rownames(coord) != "A4" & rownames(coord) != "B3" & rownames(coord) != "C3" & rownames(coord) != "C4"),]
 ```
 
 
+Now, first, lets see wich MEMs can significantly explain community patterns doing Likelihood Ratio Tests
+```{r first LR, cache = T}
+fit_SS3_MEMs_only <- manyglm(com_SS3_mvabund ~  dbMEM_exp1$MEM1 +  dbMEM_exp1$MEM2 +  dbMEM_exp1$MEM3 +  dbMEM_exp1$MEM4 , family = "negative.binomial")
+set.seed(1);anova_MEMs_only <- anova(fit_SS3_MEMs_only , nBoot = 10000,  p.uni  = "none", test = "LR")
+anova_MEMs_only
+```
+
+
+It seems that MEM1 is important! However, if look at the figure showing the MEM1, it seems to capture spatial patterns that are caused by our isolation treatments. Lets see if it remains important after accounting for effect of treatments:
+
+```{r second LR, cache = T}
+fit_SS3_no_effect <- manyglm(com_SS3_mvabund ~  1, family = "negative.binomial")
+fit_SS3_fish <- manyglm(com_SS3_mvabund ~  fish_SS3, family = "negative.binomial")
+fit_SS3_isolation <- manyglm(com_SS3_mvabund ~  fish_SS3 + isolation_SS3, family = "negative.binomial")
+fit_SS3_interaction <- manyglm(com_SS3_mvabund ~  fish_SS3 * isolation_SS3, family = "negative.binomial")
+fit_SS3_interaction_MEM1 <- manyglm(com_SS3_mvabund ~  (fish_SS3*isolation_SS3) + dbMEM_exp1$MEM1, family = "negative.binomial")
+fit_SS3_interaction_MEM2 <- manyglm(com_SS3_mvabund ~  (fish_SS3*isolation_SS3) + dbMEM_exp1$MEM1+ dbMEM_exp1$MEM2, family = "negative.binomial")
+fit_SS3_interaction_MEM3 <- manyglm(com_SS3_mvabund ~  (fish_SS3*isolation_SS3) + dbMEM_exp1$MEM1+ dbMEM_exp1$MEM2+ dbMEM_exp1$MEM3, family = "negative.binomial")
+fit_SS3_interaction_MEM4 <- manyglm(com_SS3_mvabund ~  (fish_SS3*isolation_SS3) + dbMEM_exp1$MEM1+ dbMEM_exp1$MEM2+ dbMEM_exp1$MEM3+ dbMEM_exp1$MEM4, family = "negative.binomial")
+
+
+set.seed(1);anova_treatments_MEMs <- anova(fit_SS3_no_effect,
+                                           fit_SS3_fish,
+                                           fit_SS3_isolation,
+                                           fit_SS3_interaction,
+                                           fit_SS3_interaction_MEM1,
+                                           fit_SS3_interaction_MEM2,
+                                           fit_SS3_interaction_MEM3,
+                                           fit_SS3_interaction_MEM4,
+                                           nBoot = 10000,  p.uni  = "none", test = "LR")
+anova_treatments_MEMs
+```
+It seems that after accounting for the effect of presence of fish and isolation, all of the MEMs are not important in explaining community patterns.

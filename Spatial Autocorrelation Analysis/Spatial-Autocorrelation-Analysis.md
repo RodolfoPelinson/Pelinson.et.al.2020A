@@ -4,9 +4,10 @@ Rodolfo Pelinson
 14/10/2020
 
 The goal of pelinson.et.al.2020 is to walk the user through the
-statistical analysis presented in “Pelinson et al 2020. Top predator
-introduction changes the effects of spatial isolation on freshwater
-community structure”
+statistical analysis presented in:  
+**“Pelinson et al 2020. Top predator introduction changes the effects of
+spatial isolation on freshwater community structure”**  
+DOI: <https://doi.org/10.1101/857318>
 
 You can install the last version of `pelinson.et.al.2020` package from
 my [GitHub](https://github.com/RodolfoPelinson/pelinson.et.al.2020)
@@ -79,7 +80,7 @@ dbMEM_exp1 <- dbmem(dist(coord), silent = F, thresh = dist_60m)
 ```
 
     ## User-provided truncation threshold = 0.0005808447 
-    ## Time to compute dbMEMs = 0.020000  sec
+    ## Time to compute dbMEMs = 0.000000  sec
 
 ``` r
 rownames(dbMEM_exp1) <- rownames(coord)

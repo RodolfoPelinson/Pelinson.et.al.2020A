@@ -4,9 +4,10 @@ Rodolfo Pelinson
 14/10/2020
 
 The goal of pelinson.et.al.2020 is to walk the user through the
-statistical analysis presented in “Pelinson et al 2020. Top predator
-introduction changes the effects of spatial isolation on freshwater
-community structure”
+statistical analysis presented in:  
+**“Pelinson et al 2020. Top predator introduction changes the effects of
+spatial isolation on freshwater community structure”**  
+DOI: <https://doi.org/10.1101/857318>
 
 You can install the last version of `pelinson.et.al.2020` package from
 my [GitHub](https://github.com/RodolfoPelinson/pelinson.et.al.2020)

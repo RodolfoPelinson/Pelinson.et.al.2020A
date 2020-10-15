@@ -30,16 +30,19 @@ Other packages used here are:
 `gllvm` version 1.2.2  
 `permute` version 0.9-5
 
-If you have problems with updated versions of those packages, run the
-following code:
+If you have problems with updated versions of those packages, you can
+create a project with its own library. Then you update this library with
+the packages used in this project at the versions that they were
+originally used. To that, you can run this code:
 
 ``` r
-renv::restore()
+install.packages("renv") #Only if do not have "renv"
+renv::init()
+renv::restore(lockfile = "https://raw.githubusercontent.com/RodolfoPelinson/pelinson.et.al.2020/master/renv.lock", clean = FALSE)
 ```
 
 It should update your library with the package versions used in this
-project. This is only useful if you want to repeat the analysis in the
-paper.
+project. This may take a while to create the library.
 
 ``` r
 library(vegan)

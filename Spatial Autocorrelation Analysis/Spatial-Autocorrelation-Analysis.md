@@ -30,16 +30,19 @@ Other packages used here are:
 `ade4` version 1.7-15  
 `mvabund` version 4.1.3
 
-If you have problems with updated versions of those packages, run the
-following code:
+If you have problems with updated versions of those packages, you can
+create a project with its own library. Then you update this library with
+the packages used in this project at the versions that they were
+originally used. To that, you can run this code:
 
 ``` r
-renv::restore()
+install.packages("renv") #Only if do not have "renv"
+renv::init()
+renv::restore(lockfile = "https://raw.githubusercontent.com/RodolfoPelinson/pelinson.et.al.2020/master/renv.lock", clean = FALSE)
 ```
 
 It should update your library with the package versions used in this
-project. This is only useful if you want to repeat the analysis in the
-paper.
+project. This may take a while to create the library.
 
 ``` r
 library(adegraphics)
@@ -91,7 +94,7 @@ dbMEM_exp1 <- dbmem(dist(coord), silent = F, thresh = dist_60m)
 ```
 
     ## User-provided truncation threshold = 0.0005808447 
-    ## Time to compute dbMEMs = 0.000000  sec
+    ## Time to compute dbMEMs = 0.020000  sec
 
 ``` r
 rownames(dbMEM_exp1) <- rownames(coord)

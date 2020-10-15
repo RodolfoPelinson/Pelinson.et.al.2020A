@@ -38,7 +38,8 @@ originally used. To that, you can run this code:
 ``` r
 install.packages("renv") #Only if do not have "renv"
 renv::init()
-renv::restore(lockfile = "https://raw.githubusercontent.com/RodolfoPelinson/pelinson.et.al.2020/master/renv.lock", clean = FALSE)
+renv::restore(lockfile = "https://raw.githubusercontent.com/RodolfoPelinson/pelinson.et.al.2020/master/renv.lock",
+              packages = c("vegan","permute","mvabund","gllvm","lme4","emmeans","adegraphics","adespatial","ade4","mvabund"),clean = FALSE)
 ```
 
 It should update your library with the package versions used in this

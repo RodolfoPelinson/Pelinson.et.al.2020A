@@ -28,6 +28,17 @@ Other packages used here are:
 `lme4` version 1.1-23  
 `emmeans` version 1.4.8
 
+If you have problems with updated versions of those packages, run the
+following code:
+
+``` r
+renv::restore()
+```
+
+It should update your library with the package versions used in this
+project. This is only useful if you want to repeat the analysis in the
+paper.
+
 ``` r
 library(lme4)
 library(emmeans)

@@ -30,6 +30,17 @@ Other packages used here are:
 `gllvm` version 1.2.2  
 `permute` version 0.9-5
 
+If you have problems with updated versions of those packages, run the
+following code:
+
+``` r
+renv::restore()
+```
+
+It should update your library with the package versions used in this
+project. This is only useful if you want to repeat the analysis in the
+paper.
+
 ``` r
 library(vegan)
 library(permute)

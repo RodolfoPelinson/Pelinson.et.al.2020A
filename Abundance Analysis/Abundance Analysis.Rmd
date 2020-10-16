@@ -15,7 +15,7 @@ The goal of pelinson.et.al.2020 is to walk the user through the statistical anal
 DOI: [https://doi.org/10.1101/857318](https://doi.org/10.1101/857318)  
 
 
-You can install the last version of `pelinson.et.al.2020` package from my  [GitHub](https://github.com/RodolfoPelinson/pelinson.et.al.2020) with:
+You can install the last version of `Pelinson_et_al_2020A` package from my  [GitHub](https://github.com/RodolfoPelinson/pelinson.et.al.2020) with:
 
 ``` {r installing package not eval, eval = FALSE, echo = T}
 install.packages("devtools")

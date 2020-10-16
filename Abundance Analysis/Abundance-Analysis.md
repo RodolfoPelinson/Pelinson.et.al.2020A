@@ -9,7 +9,7 @@ statistical analysis presented in:
 spatial isolation on freshwater community structure”**  
 DOI: <https://doi.org/10.1101/857318>
 
-You can install the last version of `pelinson.et.al.2020` package from
+You can install the last version of `Pelinson_et_al_2020A` package from
 my [GitHub](https://github.com/RodolfoPelinson/pelinson.et.al.2020)
 with:
 

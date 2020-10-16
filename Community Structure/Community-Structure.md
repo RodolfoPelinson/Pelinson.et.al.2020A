@@ -3,20 +3,20 @@ Community Structure
 Rodolfo Pelinson
 14/10/2020
 
-The goal of pelinson.et.al.2020 is to walk the user through the
+The goal of Pelinson.et.al.2020A is to walk the user through the
 statistical analysis presented in:  
 **“Pelinson et al 2020. Top predator introduction changes the effects of
 spatial isolation on freshwater community structure”**  
 DOI: <https://doi.org/10.1101/857318>
 
-You can install the last version of `pelinson.et.al.2020` package from
-my [GitHub](https://github.com/RodolfoPelinson/pelinson.et.al.2020)
+You can install the last version of `Pelinson.et.al.2020A` package from
+my [GitHub](https://github.com/RodolfoPelinson/Pelinson.et.al.2020A)
 with:
 
 ``` r
 install.packages("devtools")
-devtools::install_github("RodolfoPelinson/pelinson.et.al.2020")
-library("pelinson.et.al.2020")
+devtools::install_github("RodolfoPelinson/Pelinson.et.al.2020A")
+library("Pelinson.et.al.2020A")
 ```
 
 This will give you access to all the data and functions used to produce
@@ -38,7 +38,7 @@ originally used. To that, you can run this code:
 ``` r
 install.packages("renv") #Only if do not have "renv"
 renv::init()
-renv::restore(lockfile = "https://raw.githubusercontent.com/RodolfoPelinson/pelinson.et.al.2020/master/renv.lock",
+renv::restore(lockfile = "https://raw.githubusercontent.com/RodolfoPelinson/Pelinson.et.al.2020A/master/renv.lock",
               packages = c("vegan","permute","mvabund","gllvm","lme4","emmeans","adegraphics","adespatial","ade4","mvabund"),clean = FALSE)
 ```
 

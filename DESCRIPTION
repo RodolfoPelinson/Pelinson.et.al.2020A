@@ -1,4 +1,4 @@
-Package: Pelinson_et_al_2020A
+Package: Pelinson.et.al.2020A
 Title: Data Analysis of Pelinson et al 2020
 Version: 0.0.1
 Authors@R: 
@@ -14,8 +14,8 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
-URL: https://github.com/RodolfoPelinson/Pelinson_et_al_2020A
-BugReports: https://github.com/RodolfoPelinson/Pelinson_et_al_2020A/issues
+URL: https://github.com/RodolfoPelinson/Pelinson.et.al.2020A
+BugReports: https://github.com/RodolfoPelinson/Pelinson.et.al.2020A/issues
 Imports:
 Depends: 
     R (>= 2.10)

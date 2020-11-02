@@ -51,21 +51,6 @@ plot_ordination <- function (model_gllvm = NULL,LVs = NULL, species_loadings = N
     species_LV <- model_gllvm$params$theta
   }
 
-  #######################################
-  LVs <- fit_gllvm_no_effect_SS3$lvs
-  x1 <- fish_SS3
-  x2 <- isolation_SS3
-
-
-  if(isTRUE(plot_centroids)){
-    centroidLV1 <- tapply(LVs[,1], list(x1,x2), mean)
-    centroidLV2 <- tapply(LVs[,2], list(x1,x2), mean)
-  }else{
-    centroidLV1 <- NULL
-    centroidLV2 <- NULL
-  }
-  #########################################
-
 
   if(is.null(xlim)){xlim = c(min(c(LVs[,1],species_LV[,1])-0.35), max(c(LVs[,1],species_LV[,1])+0.35))}
   if(is.null(ylim)){

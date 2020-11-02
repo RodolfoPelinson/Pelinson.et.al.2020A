@@ -29,6 +29,7 @@
 #' @param xlab Label of x axis.
 #' @param alpha.elipse Transparency for the ellipses.
 #' @param sep Should plots be separated by isolation distance to improve visualization?
+#' @param plot_centroid_dist Should distances between centroids within distances be plotted?
 #'
 #'
 #' @export
@@ -40,7 +41,7 @@ plot_ordination <- function (model_gllvm = NULL,LVs = NULL, species_loadings = N
                              species_col = "black", name_species_col = "white", species_size = 4, sites_size = 1, species_names = NULL,
                              sites = T, elipse = F, site_colors = NULL, pch = NULL, legend_labels = NULL, name_species_size = 0.8,
                              legend_x = NULL, legend_y = NULL, legend = F, legend_horiz = F,  legend_ncol = 1,
-                             ylab="Latent Variable 2", xlab = "Latent Variable 1", alpha.elipse = 75, sep = F){
+                             ylab="Latent Variable 2", xlab = "Latent Variable 1", alpha.elipse = 75, sep = F, plot_centroid_dist = FALSE){
 
   if(is.null(model_gllvm)){
     LVs <- LVs
@@ -49,6 +50,22 @@ plot_ordination <- function (model_gllvm = NULL,LVs = NULL, species_loadings = N
     LVs <- model_gllvm$lvs
     species_LV <- model_gllvm$params$theta
   }
+
+  #######################################
+  LVs <- fit_gllvm_no_effect_SS3$lvs
+  x1 <- fish_SS3
+  x2 <- isolation_SS3
+
+
+  if(isTRUE(plot_centroids)){
+    centroidLV1 <- tapply(LVs[,1], list(x1,x2), mean)
+    centroidLV2 <- tapply(LVs[,2], list(x1,x2), mean)
+  }else{
+    centroidLV1 <- NULL
+    centroidLV2 <- NULL
+  }
+  #########################################
+
 
   if(is.null(xlim)){xlim = c(min(c(LVs[,1],species_LV[,1])-0.35), max(c(LVs[,1],species_LV[,1])+0.35))}
   if(is.null(ylim)){
@@ -116,7 +133,6 @@ plot_ordination <- function (model_gllvm = NULL,LVs = NULL, species_loadings = N
                  pch=pch, cex=sites_size, bty = "n", horiz = legend_horiz, ncol =  legend_ncol)
         }
       }
-
 
 
     }
@@ -201,6 +217,15 @@ plot_ordination <- function (model_gllvm = NULL,LVs = NULL, species_loadings = N
         points(species_LV[i,1],species_LV[i,2], bg = species_col[i], col = "black",cex = species_size[i], pch = 21)
         text(species_LV[i,1],species_LV[i,2], labels = species_names[i], col = name_species_col, cex = name_species_size[i])
       }
+    }
+
+    #Should distances between centroids be ploted?
+    if(isTRUE(plot_centroid_dist)){
+      centroidLV1 <- tapply(LVs[,1], list(x1,x2), mean)
+      centroidLV2 <- tapply(LVs[,2], list(x1,x2), mean)
+      arrows(x0 = centroidLV1[1,], x1 = centroidLV1[2,],
+             y0 = centroidLV2[1,], y1 = centroidLV2[2,],
+             code = 3, angle = 90, length = 0.05, c("black"), lwd = 2)
 
     }
   }

@@ -33,7 +33,8 @@ plot_ordination(
   ylab = "Latent Variable 2",
   xlab = "Latent Variable 1",
   alpha.elipse = 75,
-  sep = F
+  sep = F,
+  plot_centroid_dist = FALSE
 )
 }
 \arguments{
@@ -90,6 +91,8 @@ plot_ordination(
 \item{alpha.elipse}{Transparency for the ellipses.}
 
 \item{sep}{Should plots be separated by isolation distance to improve visualization?}
+
+\item{plot_centroid_dist}{Should distances between centroids within distances be plotted?}
 
 \item{ylimy}{A vector of length = 2 with upper and lower limits of the x axis}
 }

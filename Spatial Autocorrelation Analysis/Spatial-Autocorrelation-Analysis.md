@@ -9,14 +9,14 @@ statistical analysis presented in:
 spatial isolation on freshwater community structure”**  
 DOI: <https://doi.org/10.1101/857318>
 
-You can install the last version of `Pelinson.et.al.2020A` package from
-my [GitHub](https://github.com/RodolfoPelinson/pelinson.et.al.2020)
+You can install the last version of `PredatorIsolationComm` package from
+my [GitHub](https://github.com/RodolfoPelinson/PredatorIsolationComm)
 with:
 
 ``` r
 install.packages("devtools")
-devtools::install_github("RodolfoPelinson/Pelinson.et.al.2020A")
-library("Pelinson.et.al.2020A")
+devtools::install_github("RodolfoPelinson/PredatorIsolationComm")
+library("PredatorIsolationComm")
 ```
 
 This will give you access to all the data and functions used to produce
@@ -38,7 +38,7 @@ originally used. To that, you can run this code:
 ``` r
 install.packages("renv") #Only if do not have "renv"
 renv::init()
-renv::restore(lockfile = "https://raw.githubusercontent.com/RodolfoPelinson/Pelinson.et.al.2020A/master/renv.lock",
+renv::restore(lockfile = "https://raw.githubusercontent.com/RodolfoPelinson/PredatorIsolationComm/master/renv.lock",
               packages = c("vegan","permute","mvabund","gllvm","lme4","emmeans","adegraphics","adespatial","ade4","mvabund"),clean = FALSE)
 ```
 
@@ -95,7 +95,7 @@ dbMEM_exp1 <- dbmem(dist(coord), silent = F, thresh = dist_60m)
 ```
 
     ## User-provided truncation threshold = 0.0005808447 
-    ## Time to compute dbMEMs = 0.000000  sec
+    ## Time to compute dbMEMs = 0.020000  sec
 
 ``` r
 rownames(dbMEM_exp1) <- rownames(coord)

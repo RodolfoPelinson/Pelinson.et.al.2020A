@@ -7,7 +7,7 @@
 
 <!-- badges: end -->
 
-The goal of `Pelinson.et.al.2020A` is to walk the user through the
+The goal of `PredatorIsolationComm` is to walk the user through the
 statistical analysis presented in:  
 **“Pelinson et al 2020. Top predator introduction changes the effects of
 spatial isolation on freshwater community structure”**  
@@ -16,8 +16,8 @@ DOI: <https://doi.org/10.1101/857318>
 The analyses were divided in three different sections:
 
 [Abundance
-Analysis](https://github.com/RodolfoPelinson/Pelinson.et.al.2020A/blob/master/Abundance%20Analysis/Abundance-Analysis.md)  
+Analysis](https://github.com/RodolfoPelinson/PredatorIsolationComm/blob/master/Abundance%20Analysis/Abundance-Analysis.md)  
 [Community
-Structure](https://github.com/RodolfoPelinson/Pelinson.et.al.2020A/blob/master/Community%20Structure/Community-Structure.md)  
+Structure](https://github.com/RodolfoPelinson/PredatorIsolationComm/blob/master/Community%20Structure/Community-Structure.md)  
 [Spatial Autocorrelation
-Analysis](https://github.com/RodolfoPelinson/Pelinson.et.al.2020A/blob/master/Spatial%20Autocorrelation%20Analysis/Spatial-Autocorrelation-Analysis.md)
+Analysis](https://github.com/RodolfoPelinson/PredatorIsolationComm/blob/master/Spatial%20Autocorrelation%20Analysis/Spatial-Autocorrelation-Analysis.md)

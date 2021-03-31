@@ -38,19 +38,8 @@ Other packages used here are:
 `ade4` version 1.7-15  
 `mvabund` version 4.1.3  
 
-If you have problems with updated versions of those packages, you can create a project with its own library. Then you update this library with the packages used in this project at the versions that they were originally used. To that, you can run this code:
-```{r restore, eval = F}
-install.packages("renv") #Only if do not have "renv"
-renv::init()
-renv::restore(lockfile = "https://raw.githubusercontent.com/RodolfoPelinson/PredatorIsolationComm/master/renv.lock",
-              packages = c("vegan","permute","mvabund","gllvm","lme4","emmeans","adegraphics","adespatial","ade4","mvabund"),clean = FALSE)
-```
-It should update your library with the package versions used in this project. This may take a while to create the library.
-
 
 ``` {r installing packages2, eval = T, results = "hide", warning = F, message = F}
-
-
 library(adegraphics)
 library(adespatial)
 library(ade4)

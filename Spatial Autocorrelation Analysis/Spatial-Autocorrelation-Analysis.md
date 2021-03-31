@@ -30,21 +30,6 @@ Other packages used here are:
 `ade4` version 1.7-15  
 `mvabund` version 4.1.3
 
-If you have problems with updated versions of those packages, you can
-create a project with its own library. Then you update this library with
-the packages used in this project at the versions that they were
-originally used. To that, you can run this code:
-
-``` r
-install.packages("renv") #Only if do not have "renv"
-renv::init()
-renv::restore(lockfile = "https://raw.githubusercontent.com/RodolfoPelinson/PredatorIsolationComm/master/renv.lock",
-              packages = c("vegan","permute","mvabund","gllvm","lme4","emmeans","adegraphics","adespatial","ade4","mvabund"),clean = FALSE)
-```
-
-It should update your library with the package versions used in this
-project. This may take a while to create the library.
-
 ``` r
 library(adegraphics)
 library(adespatial)
@@ -95,7 +80,7 @@ dbMEM_exp1 <- dbmem(dist(coord), silent = F, thresh = dist_60m)
 ```
 
     ## User-provided truncation threshold = 0.0005808447 
-    ## Time to compute dbMEMs = 0.020000  sec
+    ## Time to compute dbMEMs = 0.000000  sec
 
 ``` r
 rownames(dbMEM_exp1) <- rownames(coord)
@@ -184,7 +169,7 @@ anova_MEMs_only
     ##  Test statistics calculated assuming uncorrelated response (for faster computation) 
     ##  P-value calculated using 10000 iterations via PIT-trap resampling.
 
-It seems that MEM1 is important\! However, if we look at the figure
+It seems that MEM1 is important! However, if we look at the figure
 showing the MEM1, it seems to capture spatial patterns that are caused
 by our isolation treatments. Lets see if it remains important after
 accounting for effect of treatments:

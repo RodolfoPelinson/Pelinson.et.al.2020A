@@ -30,21 +30,6 @@ Other packages used here are:
 `gllvm` version 1.2.2  
 `permute` version 0.9-5
 
-If you have problems with updated versions of those packages, you can
-create a project with its own library. Then you update this library with
-the packages used in this project at the versions that they were
-originally used. To that, you can run this code:
-
-``` r
-install.packages("renv") #Only if do not have "renv"
-renv::init()
-renv::restore(lockfile = "https://raw.githubusercontent.com/RodolfoPelinson/PredatorIsolationComm/master/renv.lock",
-              packages = c("vegan","permute","mvabund","gllvm","lme4","emmeans","adegraphics","adespatial","ade4","mvabund"),clean = FALSE)
-```
-
-It should update your library with the package versions used in this
-project. This may take a while to create the library.
-
 ``` r
 library(vegan)
 library(permute)
@@ -252,7 +237,7 @@ anova_SS1_trait_interaction
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## Arguments: P-value calculated using 10000 iterations via PIT-trap block resampling.
 
-No, it is not\!
+No, it is not!
 
 Plotting the ordination. We performed a model based unconstrained
 ordination using function `gllvm` from package `gllvm` and the
@@ -289,7 +274,7 @@ plot_ordination(fit_gllvm_no_effect_SS1, x1 = fish_SS1, x2 = isolation_SS1,
 
 Plotting pairwise comparisons coefficients and 95% confidence intervals
 for each species. There is a lot of code (I hope to improve it in the
-future\!) to get the actual coefficients and their respective intervals.
+future!) to get the actual coefficients and their respective intervals.
 They are all in the file `coefs_for_plot.R`. We can call that file
 through the `source` function. You may have to download the file
 manually if you wish to run this code.
@@ -495,7 +480,7 @@ anova_SS2_trait_interaction
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## Arguments: P-value calculated using 10000 iterations via PIT-trap block resampling.
 
-Yes, it is\!
+Yes, it is!
 
 Plotting the ordination.
 
@@ -817,7 +802,7 @@ anova_SS3_trait_interaction
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## Arguments: P-value calculated using 10000 iterations via PIT-trap block resampling.
 
-Yes\! it is\!
+Yes! it is!
 
 Plotting the ordination.
 

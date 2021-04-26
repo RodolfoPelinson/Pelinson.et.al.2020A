@@ -517,8 +517,8 @@ Plotting coefficients and confidence intervals for each species.
 First, we compare the effect of fish in each isolation distance.
 
 ``` r
-ab_SS2_pred <- order(colSums(com[which(TRAITS$trophic == "Pr")])[which(colSums(com_oc[which(survey == "1"),which(TRAITS$trophic == "Pr")]) > 2)], decreasing = T)
-ab_SS2_cons <- order(colSums(com[which(TRAITS$trophic == "Non_Pred")])[which(colSums(com_oc[which(survey == "1"),which(TRAITS$trophic == "Non_Pred")]) > 2)], decreasing = T)
+ab_SS2_pred <- order(colSums(com[which(TRAITS$trophic == "Pr")])[which(colSums(com_oc[which(survey == "2"),which(TRAITS$trophic == "Pr")]) > 2)], decreasing = T)
+ab_SS2_cons <- order(colSums(com[which(TRAITS$trophic == "Non_Pred")])[which(colSums(com_oc[which(survey == "2"),which(TRAITS$trophic == "Non_Pred")]) > 2)], decreasing = T)
 
 par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
 
@@ -533,6 +533,12 @@ My_coefplot(c(as.matrix(c(fish_effect_SS2_30[which(TRAITS_SS2$trophic == "Pr")][
             xlab = "Effect on abundance",
             main = "30 m - SS2", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
 ```
+
+    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
+    ## zero-length arrow is of indeterminate angle and so skipped
+
+    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
+    ## zero-length arrow is of indeterminate angle and so skipped
 
     ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
     ## zero-length arrow is of indeterminate angle and so skipped
@@ -565,6 +571,12 @@ My_coefplot(c(as.matrix(c(fish_effect_SS2_120[which(TRAITS_SS2$trophic == "Pr")]
     ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
     ## zero-length arrow is of indeterminate angle and so skipped
 
+    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
+    ## zero-length arrow is of indeterminate angle and so skipped
+
+    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
+    ## zero-length arrow is of indeterminate angle and so skipped
+
 ``` r
 My_coefplot(c(as.matrix(c(fish_effect_SS2_480[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
                           fish_effect_SS2_480[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
@@ -577,6 +589,12 @@ My_coefplot(c(as.matrix(c(fish_effect_SS2_480[which(TRAITS_SS2$trophic == "Pr")]
             xlab = "Effect on abundance",
             main = "480 m - SS2", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
 ```
+
+    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
+    ## zero-length arrow is of indeterminate angle and so skipped
+
+    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
+    ## zero-length arrow is of indeterminate angle and so skipped
 
     ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
     ## zero-length arrow is of indeterminate angle and so skipped
@@ -873,8 +891,8 @@ Plotting coefficients and confidence intervals for each species.
 First, we compare the effect of fish in each isolation distance.
 
 ``` r
-ab_SS3_pred <- order(colSums(com[which(TRAITS$trophic == "Pr")])[which(colSums(com_oc[which(survey == "1"),which(TRAITS$trophic == "Pr")]) > 2)], decreasing = T)
-ab_SS3_cons <- order(colSums(com[which(TRAITS$trophic == "Non_Pred")])[which(colSums(com_oc[which(survey == "1"),which(TRAITS$trophic == "Non_Pred")]) > 2)], decreasing = T)
+ab_SS3_pred <- order(colSums(com[which(TRAITS$trophic == "Pr")])[which(colSums(com_oc[which(survey == "3"),which(TRAITS$trophic == "Pr")]) > 2)], decreasing = T)
+ab_SS3_cons <- order(colSums(com[which(TRAITS$trophic == "Non_Pred")])[which(colSums(com_oc[which(survey == "3"),which(TRAITS$trophic == "Non_Pred")]) > 2)], decreasing = T)
 
 par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
 

@@ -7,20 +7,14 @@ z<-qnorm(0.975, mean = 0, sd = 1)
 
 fit_Time_1_2 <- manyglm(com_incomplete_mvabund ~ relevel(survey_incomplete, ref = "1"), family = "negative.binomial")
 
-length(survey_incomplete)
-dim(com_incomplete_mvabund)
 
 effect_Time_1_2<-fit_Time_1_2$coefficients[2,]
 effect_Time_1_2_se <-fit_Time_1_2$stderr.coefficients[2,]
-effect_Time_1_2_se[which(effect_Time_1_2_se>100)] <- fit_Time_1_2$stderr.coefficients[1,][which(effect_Time_1_2_se>100)]
-fit_Time_1_2 <- manyglm(com_incomplete_mvabund ~ relevel(survey_incomplete, ref = "2"), family = "negative.binomial")
-effect_Time_1_2_se[which(effect_Time_1_2_se>100)] <- fit_Time_1_2$stderr.coefficients[1,][which(effect_Time_1_2_se>100)]
-
 effect_Time_1_2[which(effect_Time_1_2_se>100)] <- 0
-effect_Time_1_2_se[which(effect_Time_1_2_se>100)] <- 0
+effect_Time_1_2[which(effect_Time_1_2_se == 0 & effect_Time_1_2 < 0.01 & effect_Time_1_2 > -0.01)] <- 0
 
-effect_Time_1_2
-effect_Time_1_2_se
+#effect_Time_1_2
+#effect_Time_1_2_se
 
 effect_Time_upper_1_2 <- effect_Time_1_2 + (z*effect_Time_1_2_se)
 effect_Time_lower_1_2 <- effect_Time_1_2 - (z*effect_Time_1_2_se)
@@ -33,15 +27,11 @@ fit_Time_2_3 <- manyglm(com_incomplete_mvabund ~ relevel(survey_incomplete, ref 
 
 effect_Time_2_3<-fit_Time_2_3$coefficients[3,]
 effect_Time_2_3_se <-fit_Time_2_3$stderr.coefficients[3,]
-effect_Time_2_3_se[which(effect_Time_2_3_se>100)] <- fit_Time_2_3$stderr.coefficients[1,][which(effect_Time_2_3_se>100)]
-fit_Time_2_3 <- manyglm(com_incomplete_mvabund ~ relevel(survey_incomplete, ref = "3"), family = "negative.binomial")
-effect_Time_2_3_se[which(effect_Time_2_3_se>100)] <- fit_Time_2_3$stderr.coefficients[1,][which(effect_Time_2_3_se>100)]
-
-effect_Time_2_3[which(effect_Time_2_3_se>100)] <- 0
 effect_Time_2_3_se[which(effect_Time_2_3_se>100)] <- 0
+effect_Time_2_3[which(effect_Time_2_3_se == 0 & effect_Time_2_3 < 0.01 & effect_Time_2_3 > -0.01)] <- 0
 
-effect_Time_2_3
-effect_Time_2_3_se
+#effect_Time_2_3
+#effect_Time_2_3_se
 
 effect_Time_upper_2_3 <- effect_Time_2_3 + (z*effect_Time_2_3_se)
 effect_Time_lower_2_3 <- effect_Time_2_3 - (z*effect_Time_2_3_se)
@@ -53,15 +43,11 @@ fit_Time_1_3 <- manyglm(com_incomplete_mvabund ~ relevel(survey_incomplete, ref 
 
 effect_Time_1_3<-fit_Time_1_3$coefficients[3,]
 effect_Time_1_3_se <-fit_Time_1_3$stderr.coefficients[3,]
-effect_Time_1_3_se[which(effect_Time_1_3_se>100)] <- fit_Time_1_3$stderr.coefficients[1,][which(effect_Time_1_3_se>100)]
-fit_Time_1_3 <- manyglm(com_incomplete_mvabund ~ relevel(survey_incomplete, ref = "3"), family = "negative.binomial")
-effect_Time_1_3_se[which(effect_Time_1_3_se>100)] <- fit_Time_1_3$stderr.coefficients[1,][which(effect_Time_1_3_se>100)]
-
-effect_Time_1_3[which(effect_Time_1_3_se>100)] <- 0
 effect_Time_1_3_se[which(effect_Time_1_3_se>100)] <- 0
+effect_Time_1_3[which(effect_Time_1_3_se == 0 & effect_Time_1_3 < 0.01 & effect_Time_1_3 > -0.01)] <- 0
 
-effect_Time_1_3
-effect_Time_1_3_se
+#effect_Time_1_3
+#effect_Time_1_3_se
 
 effect_Time_upper_1_3 <- effect_Time_1_3 + (z*effect_Time_1_3_se)
 effect_Time_lower_1_3 <- effect_Time_1_3 - (z*effect_Time_1_3_se)
@@ -79,15 +65,11 @@ fit_SS1_fish_effect_30 <- manyglm(com_SS1_mvabund ~ fish_SS1 * relevel(isolation
 
 fish_effect_SS1_30<-fit_SS1_fish_effect_30$coefficients[2,]
 fish_effect_SS1_30_se <-fit_SS1_fish_effect_30$stderr.coefficients[2,]
-fish_effect_SS1_30_se[which(fish_effect_SS1_30_se>100)] <- fit_SS1_fish_effect_30$stderr.coefficients[1,][which(fish_effect_SS1_30_se>100)]
-fit_SS1_fish_effect_30 <- manyglm(com_SS1_mvabund ~ relevel(fish_SS1, ref = "present") * relevel(isolation_SS1, ref = "30"), family = "negative.binomial")
-fish_effect_SS1_30_se[which(fish_effect_SS1_30_se>100)] <- fit_SS1_fish_effect_30$stderr.coefficients[1,][which(fish_effect_SS1_30_se>100)]
-
-fish_effect_SS1_30[which(fish_effect_SS1_30_se>100)] <- 0
 fish_effect_SS1_30_se[which(fish_effect_SS1_30_se>100)] <- 0
+fish_effect_SS1_30[which(fish_effect_SS1_30_se == 0 & fish_effect_SS1_30 < 0.01 & fish_effect_SS1_30 > -0.01)] <- 0
 
-fish_effect_SS1_30
-fish_effect_SS1_30_se
+#fish_effect_SS1_30
+#fish_effect_SS1_30_se
 
 fish_effect_SS1_upper_30 <- fish_effect_SS1_30 + (z*fish_effect_SS1_30_se)
 fish_effect_SS1_lower_30 <- fish_effect_SS1_30 - (z*fish_effect_SS1_30_se)
@@ -99,15 +81,11 @@ fit_SS1_fish_effect_120 <- manyglm(com_SS1_mvabund ~ fish_SS1 * relevel(isolatio
 
 fish_effect_SS1_120<-fit_SS1_fish_effect_120$coefficients[2,]
 fish_effect_SS1_120_se <-fit_SS1_fish_effect_120$stderr.coefficients[2,]
-fish_effect_SS1_120_se[which(fish_effect_SS1_120_se>100)] <- fit_SS1_fish_effect_120$stderr.coefficients[1,][which(fish_effect_SS1_120_se>100)]
-fit_SS1_fish_effect_120 <- manyglm(com_SS1_mvabund ~ relevel(fish_SS1, ref = "present") * relevel(isolation_SS1, ref = "120"), family = "negative.binomial")
-fish_effect_SS1_120_se[which(fish_effect_SS1_120_se>100)] <- fit_SS1_fish_effect_120$stderr.coefficients[1,][which(fish_effect_SS1_120_se>100)]
-
-fish_effect_SS1_120[which(fish_effect_SS1_120_se>100)] <- 0
 fish_effect_SS1_120_se[which(fish_effect_SS1_120_se>100)] <- 0
+fish_effect_SS1_120[which(fish_effect_SS1_120_se == 0 & fish_effect_SS1_120 < 0.01 & fish_effect_SS1_120 > -0.01)] <- 0
 
-fish_effect_SS1_120
-fish_effect_SS1_120_se
+#fish_effect_SS1_120
+#fish_effect_SS1_120_se
 
 fish_effect_SS1_upper_120 <- fish_effect_SS1_120 + (z*fish_effect_SS1_120_se)
 fish_effect_SS1_lower_120 <- fish_effect_SS1_120 - (z*fish_effect_SS1_120_se)
@@ -119,15 +97,11 @@ fit_SS1_fish_effect_480 <- manyglm(com_SS1_mvabund ~ fish_SS1 * relevel(isolatio
 
 fish_effect_SS1_480<-fit_SS1_fish_effect_480$coefficients[2,]
 fish_effect_SS1_480_se <-fit_SS1_fish_effect_480$stderr.coefficients[2,]
-fish_effect_SS1_480_se[which(fish_effect_SS1_480_se>100)] <- fit_SS1_fish_effect_480$stderr.coefficients[1,][which(fish_effect_SS1_480_se>100)]
-fit_SS1_fish_effect_480 <- manyglm(com_SS1_mvabund ~ relevel(fish_SS1, ref = "present") * relevel(isolation_SS1, ref = "480"), family = "negative.binomial")
-fish_effect_SS1_480_se[which(fish_effect_SS1_480_se>100)] <- fit_SS1_fish_effect_480$stderr.coefficients[1,][which(fish_effect_SS1_480_se>100)]
-
-fish_effect_SS1_480[which(fish_effect_SS1_480_se>100)] <- 0
 fish_effect_SS1_480_se[which(fish_effect_SS1_480_se>100)] <- 0
+fish_effect_SS1_480[which(fish_effect_SS1_480_se == 0 & fish_effect_SS1_480 < 0.01 & fish_effect_SS1_480 > -0.01)] <- 0
 
-fish_effect_SS1_480
-fish_effect_SS1_480_se
+#fish_effect_SS1_480
+#fish_effect_SS1_480_se
 
 fish_effect_SS1_upper_480 <- fish_effect_SS1_480 + (z*fish_effect_SS1_480_se)
 fish_effect_SS1_lower_480 <- fish_effect_SS1_480 - (z*fish_effect_SS1_480_se)
@@ -144,15 +118,11 @@ fit_SS2_fish_effect_30 <- manyglm(com_SS2_mvabund ~ fish_SS2 * relevel(isolation
 
 fish_effect_SS2_30<-fit_SS2_fish_effect_30$coefficients[2,]
 fish_effect_SS2_30_se <-fit_SS2_fish_effect_30$stderr.coefficients[2,]
-fish_effect_SS2_30_se[which(fish_effect_SS2_30_se>100)] <- fit_SS2_fish_effect_30$stderr.coefficients[1,][which(fish_effect_SS2_30_se>100)]
-fit_SS2_fish_effect_30 <- manyglm(com_SS2_mvabund ~ relevel(fish_SS2, ref = "present") * relevel(isolation_SS2, ref = "30"), family = "negative.binomial")
-fish_effect_SS2_30_se[which(fish_effect_SS2_30_se>100)] <- fit_SS2_fish_effect_30$stderr.coefficients[1,][which(fish_effect_SS2_30_se>100)]
-
-fish_effect_SS2_30[which(fish_effect_SS2_30_se>100)] <- 0
 fish_effect_SS2_30_se[which(fish_effect_SS2_30_se>100)] <- 0
+fish_effect_SS2_30[which(fish_effect_SS2_30_se == 0 & fish_effect_SS2_30 < 0.01 & fish_effect_SS2_30 > -0.01)] <- 0
 
-fish_effect_SS2_30
-fish_effect_SS2_30_se
+#fish_effect_SS2_30
+#fish_effect_SS2_30_se
 
 fish_effect_SS2_upper_30 <- fish_effect_SS2_30 + (z*fish_effect_SS2_30_se)
 fish_effect_SS2_lower_30 <- fish_effect_SS2_30 - (z*fish_effect_SS2_30_se)
@@ -164,15 +134,11 @@ fit_SS2_fish_effect_120 <- manyglm(com_SS2_mvabund ~ fish_SS2 * relevel(isolatio
 
 fish_effect_SS2_120<-fit_SS2_fish_effect_120$coefficients[2,]
 fish_effect_SS2_120_se <-fit_SS2_fish_effect_120$stderr.coefficients[2,]
-fish_effect_SS2_120_se[which(fish_effect_SS2_120_se>100)] <- fit_SS2_fish_effect_120$stderr.coefficients[1,][which(fish_effect_SS2_120_se>100)]
-fit_SS2_fish_effect_120 <- manyglm(com_SS2_mvabund ~ relevel(fish_SS2, ref = "present") * relevel(isolation_SS2, ref = "120"), family = "negative.binomial")
-fish_effect_SS2_120_se[which(fish_effect_SS2_120_se>100)] <- fit_SS2_fish_effect_120$stderr.coefficients[1,][which(fish_effect_SS2_120_se>100)]
-
-fish_effect_SS2_120[which(fish_effect_SS2_120_se>100)] <- 0
 fish_effect_SS2_120_se[which(fish_effect_SS2_120_se>100)] <- 0
+fish_effect_SS2_120[which(fish_effect_SS2_120_se == 0 & fish_effect_SS2_120 < 0.01 & fish_effect_SS2_120 > -0.01)] <- 0
 
-fish_effect_SS2_120
-fish_effect_SS2_120_se
+#fish_effect_SS2_120
+#fish_effect_SS2_120_se
 
 fish_effect_SS2_upper_120 <- fish_effect_SS2_120 + (z*fish_effect_SS2_120_se)
 fish_effect_SS2_lower_120 <- fish_effect_SS2_120 - (z*fish_effect_SS2_120_se)
@@ -184,15 +150,11 @@ fit_SS2_fish_effect_480 <- manyglm(com_SS2_mvabund ~ fish_SS2 * relevel(isolatio
 
 fish_effect_SS2_480<-fit_SS2_fish_effect_480$coefficients[2,]
 fish_effect_SS2_480_se <-fit_SS2_fish_effect_480$stderr.coefficients[2,]
-fish_effect_SS2_480_se[which(fish_effect_SS2_480_se>100)] <- fit_SS2_fish_effect_480$stderr.coefficients[1,][which(fish_effect_SS2_480_se>100)]
-fit_SS2_fish_effect_480 <- manyglm(com_SS2_mvabund ~ relevel(fish_SS2, ref = "present") * relevel(isolation_SS2, ref = "480"), family = "negative.binomial")
-fish_effect_SS2_480_se[which(fish_effect_SS2_480_se>100)] <- fit_SS2_fish_effect_480$stderr.coefficients[1,][which(fish_effect_SS2_480_se>100)]
-
-fish_effect_SS2_480[which(fish_effect_SS2_480_se>100)] <- 0
 fish_effect_SS2_480_se[which(fish_effect_SS2_480_se>100)] <- 0
+fish_effect_SS2_480[which(fish_effect_SS2_480_se == 0 & fish_effect_SS2_480 < 0.01 & fish_effect_SS2_480 > -0.01)] <- 0
 
-fish_effect_SS2_480
-fish_effect_SS2_480_se
+#fish_effect_SS2_480
+#fish_effect_SS2_480_se
 
 fish_effect_SS2_upper_480 <- fish_effect_SS2_480 + (z*fish_effect_SS2_480_se)
 fish_effect_SS2_lower_480 <- fish_effect_SS2_480 - (z*fish_effect_SS2_480_se)
@@ -228,16 +190,11 @@ fit_SS3_fish_effect_30 <- manyglm(com_SS3_mvabund ~ fish_SS3 * relevel(isolation
 
 fish_effect_SS3_30<-fit_SS3_fish_effect_30$coefficients[2,]
 fish_effect_SS3_30_se <-fit_SS3_fish_effect_30$stderr.coefficients[2,]
-fish_effect_SS3_30_se[which(fish_effect_SS3_30_se>100)] <- fit_SS3_fish_effect_30$stderr.coefficients[1,][which(fish_effect_SS3_30_se>100)]
-fit_SS3_fish_effect_30 <- manyglm(com_SS3_mvabund ~ relevel(fish_SS3, ref = "present") * relevel(isolation_SS3, ref = "30"), family = "negative.binomial")
-fish_effect_SS3_30_se[which(fish_effect_SS3_30_se>100)] <- fit_SS3_fish_effect_30$stderr.coefficients[1,][which(fish_effect_SS3_30_se>100)]
-
-
-fish_effect_SS3_30[which(fish_effect_SS3_30_se>100)] <- 0
 fish_effect_SS3_30_se[which(fish_effect_SS3_30_se>100)] <- 0
+fish_effect_SS3_30[which(fish_effect_SS3_30_se == 0 & fish_effect_SS3_30 < 0.01 & fish_effect_SS3_30 > -0.01)] <- 0
 
-fish_effect_SS3_30
-fish_effect_SS3_30_se
+#fish_effect_SS3_30
+#fish_effect_SS3_30_se
 
 fish_effect_SS3_upper_30 <- fish_effect_SS3_30 + (z*fish_effect_SS3_30_se)
 fish_effect_SS3_lower_30 <- fish_effect_SS3_30 - (z*fish_effect_SS3_30_se)
@@ -251,15 +208,11 @@ fit_SS3_fish_effect_120 <- manyglm(com_SS3_mvabund ~ fish_SS3 * relevel(isolatio
 
 fish_effect_SS3_120<-fit_SS3_fish_effect_120$coefficients[2,]
 fish_effect_SS3_120_se <-fit_SS3_fish_effect_120$stderr.coefficients[2,]
-fish_effect_SS3_120_se[which(fish_effect_SS3_120_se>100)] <- fit_SS3_fish_effect_120$stderr.coefficients[1,][which(fish_effect_SS3_120_se>100)]
-fit_SS3_fish_effect_120 <- manyglm(com_SS3_mvabund ~ relevel(fish_SS3, ref = "present") * relevel(isolation_SS3, ref = "120"), family = "negative.binomial")
-fish_effect_SS3_120_se[which(fish_effect_SS3_120_se>100)] <- fit_SS3_fish_effect_120$stderr.coefficients[1,][which(fish_effect_SS3_120_se>100)]
-
-fish_effect_SS3_120[which(fish_effect_SS3_120_se>100)] <- 0
 fish_effect_SS3_120_se[which(fish_effect_SS3_120_se>100)] <- 0
+fish_effect_SS3_120[which(fish_effect_SS3_120_se == 0 & fish_effect_SS3_120 < 0.01 & fish_effect_SS3_120 > -0.01)] <- 0
 
-fish_effect_SS3_120
-fish_effect_SS3_120_se
+#fish_effect_SS3_120
+#fish_effect_SS3_120_se
 
 fish_effect_SS3_upper_120 <- fish_effect_SS3_120 + (z*fish_effect_SS3_120_se)
 fish_effect_SS3_lower_120 <- fish_effect_SS3_120 - (z*fish_effect_SS3_120_se)
@@ -271,15 +224,11 @@ fit_SS3_fish_effect_480 <- manyglm(com_SS3_mvabund ~ fish_SS3 * relevel(isolatio
 
 fish_effect_SS3_480<-fit_SS3_fish_effect_480$coefficients[2,]
 fish_effect_SS3_480_se <-fit_SS3_fish_effect_480$stderr.coefficients[2,]
-fish_effect_SS3_480_se[which(fish_effect_SS3_480_se>100)] <- fit_SS3_fish_effect_480$stderr.coefficients[1,][which(fish_effect_SS3_480_se>100)]
-fit_SS3_fish_effect_480 <- manyglm(com_SS3_mvabund ~ relevel(fish_SS3, ref = "present") * relevel(isolation_SS3, ref = "480"), family = "negative.binomial")
-fish_effect_SS3_480_se[which(fish_effect_SS3_480_se>100)] <- fit_SS3_fish_effect_480$stderr.coefficients[1,][which(fish_effect_SS3_480_se>100)]
-
-fish_effect_SS3_480[which(fish_effect_SS3_480_se>100)] <- 0
 fish_effect_SS3_480_se[which(fish_effect_SS3_480_se>100)] <- 0
+fish_effect_SS3_480[which(fish_effect_SS3_480_se == 0 & fish_effect_SS3_480 < 0.01 & fish_effect_SS3_480 > -0.01)] <- 0
 
-fish_effect_SS3_480
-fish_effect_SS3_480_se
+#fish_effect_SS3_480
+#fish_effect_SS3_480_se
 
 fish_effect_SS3_upper_480 <- fish_effect_SS3_480 + (z*fish_effect_SS3_480_se)
 fish_effect_SS3_lower_480 <- fish_effect_SS3_480 - (z*fish_effect_SS3_480_se)
@@ -319,14 +268,11 @@ fit_SS1_isolation_effect_30_120 <- manyglm(com_SS1_mvabund ~ fish_SS1 * relevel(
 
 isolation_effect_SS1_30_120<-fit_SS1_isolation_effect_30_120$coefficients[3,]
 isolation_effect_SS1_30_120_se <-fit_SS1_isolation_effect_30_120$stderr.coefficients[3,]
-isolation_effect_SS1_30_120_se[which(isolation_effect_SS1_30_120_se>100)] <- fit_SS1_isolation_effect_30_120$stderr.coefficients[1,][which(isolation_effect_SS1_30_120_se>100)]
-isolation_effect_SS1_30_120_se[which(isolation_effect_SS1_30_120_se>100)] <- fit_SS1_isolation_effect_30_120$stderr.coefficients[1,][which(isolation_effect_SS1_30_120_se>100)]
-
-isolation_effect_SS1_30_120[which(isolation_effect_SS1_30_120_se>100)] <- 0
 isolation_effect_SS1_30_120_se[which(isolation_effect_SS1_30_120_se>100)] <- 0
+isolation_effect_SS1_30_120[which(isolation_effect_SS1_30_120_se == 0 & isolation_effect_SS1_30_120 < 0.01 & isolation_effect_SS1_30_120 > -0.01)] <- 0
 
-isolation_effect_SS1_30_120
-isolation_effect_SS1_30_120_se
+#isolation_effect_SS1_30_120
+#isolation_effect_SS1_30_120_se
 
 isolation_effect_SS1_upper_30_120 <- isolation_effect_SS1_30_120 + (z*isolation_effect_SS1_30_120_se)
 isolation_effect_SS1_lower_30_120 <- isolation_effect_SS1_30_120 - (z*isolation_effect_SS1_30_120_se)
@@ -340,15 +286,11 @@ fit_SS1_isolation_effect_120_480 <- manyglm(com_SS1_mvabund ~ fish_SS1 * relevel
 
 isolation_effect_SS1_120_480<-fit_SS1_isolation_effect_120_480$coefficients[4,]
 isolation_effect_SS1_120_480_se <-fit_SS1_isolation_effect_120_480$stderr.coefficients[4,]
-isolation_effect_SS1_120_480_se[which(isolation_effect_SS1_120_480_se>100)] <- fit_SS1_isolation_effect_120_480$stderr.coefficients[1,][which(isolation_effect_SS1_120_480_se>100)]
-fit_SS1_isolation_effect_120_480 <- manyglm(com_SS1_mvabund ~ fish_SS1 * relevel(isolation_SS1, ref = "480"), family = "negative.binomial")
-isolation_effect_SS1_120_480_se[which(isolation_effect_SS1_120_480_se>100)] <- fit_SS1_isolation_effect_120_480$stderr.coefficients[1,][which(isolation_effect_SS1_120_480_se>100)]
-
-isolation_effect_SS1_120_480[which(isolation_effect_SS1_120_480_se>100)] <- 0
 isolation_effect_SS1_120_480_se[which(isolation_effect_SS1_120_480_se>100)] <- 0
+isolation_effect_SS1_120_480[which(isolation_effect_SS1_120_480_se == 0 & isolation_effect_SS1_120_480 < 0.01 & isolation_effect_SS1_120_480 > -0.01)] <- 0
 
-isolation_effect_SS1_120_480
-isolation_effect_SS1_120_480_se
+#isolation_effect_SS1_120_480
+#isolation_effect_SS1_120_480_se
 
 isolation_effect_SS1_upper_120_480 <- isolation_effect_SS1_120_480 + (z*isolation_effect_SS1_120_480_se)
 isolation_effect_SS1_lower_120_480 <- isolation_effect_SS1_120_480 - (z*isolation_effect_SS1_120_480_se)
@@ -361,15 +303,11 @@ fit_SS1_isolation_effect_30_480 <- manyglm(com_SS1_mvabund ~ fish_SS1 * relevel(
 
 isolation_effect_SS1_30_480<-fit_SS1_isolation_effect_30_480$coefficients[4,]
 isolation_effect_SS1_30_480_se <-fit_SS1_isolation_effect_30_480$stderr.coefficients[4,]
-isolation_effect_SS1_30_480_se[which(isolation_effect_SS1_30_480_se>100)] <- fit_SS1_isolation_effect_30_480$stderr.coefficients[1,][which(isolation_effect_SS1_30_480_se>100)]
-fit_SS1_isolation_effect_30_480 <- manyglm(com_SS1_mvabund ~ fish_SS1 * relevel(isolation_SS1, ref = "480"), family = "negative.binomial")
-isolation_effect_SS1_30_480_se[which(isolation_effect_SS1_30_480_se>100)] <- fit_SS1_isolation_effect_30_480$stderr.coefficients[1,][which(isolation_effect_SS1_30_480_se>100)]
-
-isolation_effect_SS1_30_480[which(isolation_effect_SS1_30_480_se>100)] <- 0
 isolation_effect_SS1_30_480_se[which(isolation_effect_SS1_30_480_se>100)] <- 0
+isolation_effect_SS1_30_480[which(isolation_effect_SS1_30_480_se == 0 & isolation_effect_SS1_30_480 < 0.01 & isolation_effect_SS1_30_480 > -0.01)] <- 0
 
-isolation_effect_SS1_30_480
-isolation_effect_SS1_30_480_se
+#isolation_effect_SS1_30_480
+#isolation_effect_SS1_30_480_se
 
 isolation_effect_SS1_upper_30_480 <- isolation_effect_SS1_30_480 + (z*isolation_effect_SS1_30_480_se)
 isolation_effect_SS1_lower_30_480 <- isolation_effect_SS1_30_480 - (z*isolation_effect_SS1_30_480_se)
@@ -384,15 +322,11 @@ fit_SS2_isolation_effect_30_120 <- manyglm(com_SS2_mvabund ~ fish_SS2 * relevel(
 
 isolation_effect_SS2_30_120<-fit_SS2_isolation_effect_30_120$coefficients[3,]
 isolation_effect_SS2_30_120_se <-fit_SS2_isolation_effect_30_120$stderr.coefficients[3,]
-isolation_effect_SS2_30_120_se[which(isolation_effect_SS2_30_120_se>100)] <- fit_SS2_isolation_effect_30_120$stderr.coefficients[1,][which(isolation_effect_SS2_30_120_se>100)]
-fit_SS2_isolation_effect_30_120 <- manyglm(com_SS2_mvabund ~ fish_SS2 * relevel(isolation_SS2, ref = "120"), family = "negative.binomial")
-isolation_effect_SS2_30_120_se[which(isolation_effect_SS2_30_120_se>100)] <- fit_SS2_isolation_effect_30_120$stderr.coefficients[1,][which(isolation_effect_SS2_30_120_se>100)]
-
-isolation_effect_SS2_30_120[which(isolation_effect_SS2_30_120_se>100)] <- 0
 isolation_effect_SS2_30_120_se[which(isolation_effect_SS2_30_120_se>100)] <- 0
+isolation_effect_SS2_30_120[which(isolation_effect_SS2_30_120_se == 0 & isolation_effect_SS2_30_120 < 0.01 & isolation_effect_SS2_30_120 > -0.01)] <- 0
 
-isolation_effect_SS2_30_120
-isolation_effect_SS2_30_120_se
+#isolation_effect_SS2_30_120
+#isolation_effect_SS2_30_120_se
 
 isolation_effect_SS2_upper_30_120 <- isolation_effect_SS2_30_120 + (z*isolation_effect_SS2_30_120_se)
 isolation_effect_SS2_lower_30_120 <- isolation_effect_SS2_30_120 - (z*isolation_effect_SS2_30_120_se)
@@ -406,15 +340,11 @@ fit_SS2_isolation_effect_120_480 <- manyglm(com_SS2_mvabund ~ fish_SS2 * relevel
 
 isolation_effect_SS2_120_480<-fit_SS2_isolation_effect_120_480$coefficients[4,]
 isolation_effect_SS2_120_480_se <-fit_SS2_isolation_effect_120_480$stderr.coefficients[4,]
-isolation_effect_SS2_120_480_se[which(isolation_effect_SS2_120_480_se>100)] <- fit_SS2_isolation_effect_120_480$stderr.coefficients[1,][which(isolation_effect_SS2_120_480_se>100)]
-fit_SS2_isolation_effect_120_480 <- manyglm(com_SS2_mvabund ~ fish_SS2 * relevel(isolation_SS2, ref = "480"), family = "negative.binomial")
-isolation_effect_SS2_120_480_se[which(isolation_effect_SS2_120_480_se>100)] <- fit_SS2_isolation_effect_120_480$stderr.coefficients[1,][which(isolation_effect_SS2_120_480_se>100)]
-
-isolation_effect_SS2_120_480[which(isolation_effect_SS2_120_480_se>100)] <- 0
 isolation_effect_SS2_120_480_se[which(isolation_effect_SS2_120_480_se>100)] <- 0
+isolation_effect_SS2_120_480[which(isolation_effect_SS2_120_480_se == 0 & isolation_effect_SS2_120_480 < 0.01 & isolation_effect_SS2_120_480 > -0.01)] <- 0
 
-isolation_effect_SS2_120_480
-isolation_effect_SS2_120_480_se
+#isolation_effect_SS2_120_480
+#isolation_effect_SS2_120_480_se
 
 isolation_effect_SS2_upper_120_480 <- isolation_effect_SS2_120_480 + (z*isolation_effect_SS2_120_480_se)
 isolation_effect_SS2_lower_120_480 <- isolation_effect_SS2_120_480 - (z*isolation_effect_SS2_120_480_se)
@@ -427,15 +357,11 @@ fit_SS2_isolation_effect_30_480 <- manyglm(com_SS2_mvabund ~ fish_SS2 * relevel(
 
 isolation_effect_SS2_30_480<-fit_SS2_isolation_effect_30_480$coefficients[4,]
 isolation_effect_SS2_30_480_se <-fit_SS2_isolation_effect_30_480$stderr.coefficients[4,]
-isolation_effect_SS2_30_480_se[which(isolation_effect_SS2_30_480_se>100)] <- fit_SS2_isolation_effect_30_480$stderr.coefficients[1,][which(isolation_effect_SS2_30_480_se>100)]
-fit_SS2_isolation_effect_30_480 <- manyglm(com_SS2_mvabund ~ fish_SS2 * relevel(isolation_SS2, ref = "480"), family = "negative.binomial")
-isolation_effect_SS2_30_480_se[which(isolation_effect_SS2_30_480_se>100)] <- fit_SS2_isolation_effect_30_480$stderr.coefficients[1,][which(isolation_effect_SS2_30_480_se>100)]
-
-isolation_effect_SS2_30_480[which(isolation_effect_SS2_30_480_se>100)] <- 0
 isolation_effect_SS2_30_480_se[which(isolation_effect_SS2_30_480_se>100)] <- 0
+isolation_effect_SS2_30_480[which(isolation_effect_SS2_30_480_se == 0 & isolation_effect_SS2_30_480 < 0.01 & isolation_effect_SS2_30_480 > -0.01)] <- 0
 
-isolation_effect_SS2_30_480
-isolation_effect_SS2_30_480_se
+#isolation_effect_SS2_30_480
+#isolation_effect_SS2_30_480_se
 
 isolation_effect_SS2_upper_30_480 <- isolation_effect_SS2_30_480 + (z*isolation_effect_SS2_30_480_se)
 isolation_effect_SS2_lower_30_480 <- isolation_effect_SS2_30_480 - (z*isolation_effect_SS2_30_480_se)
@@ -469,15 +395,11 @@ fit_SS3_isolation_effect_30_120 <- manyglm(com_SS3_mvabund ~ relevel(fish_SS3, r
 
 isolation_effect_SS3_30_120<-fit_SS3_isolation_effect_30_120$coefficients[3,]
 isolation_effect_SS3_30_120_se <-fit_SS3_isolation_effect_30_120$stderr.coefficients[3,]
-isolation_effect_SS3_30_120_se[which(isolation_effect_SS3_30_120_se>100)] <- fit_SS3_isolation_effect_30_120$stderr.coefficients[1,][which(isolation_effect_SS3_30_120_se>100)]
-fit_SS3_isolation_effect_30_120 <- manyglm(com_SS3_mvabund ~ relevel(fish_SS3, ref = "absent") * relevel(isolation_SS3, ref = "120"), family = "negative.binomial")
-isolation_effect_SS3_30_120_se[which(isolation_effect_SS3_30_120_se>100)] <- fit_SS3_isolation_effect_30_120$stderr.coefficients[1,][which(isolation_effect_SS3_30_120_se>100)]
-
-isolation_effect_SS3_30_120[which(isolation_effect_SS3_30_120_se>100)] <- 0
 isolation_effect_SS3_30_120_se[which(isolation_effect_SS3_30_120_se>100)] <- 0
+isolation_effect_SS3_30_120[which(isolation_effect_SS3_30_120_se == 0 & isolation_effect_SS3_30_120 < 0.01 & isolation_effect_SS3_30_120 > -0.01)] <- 0
 
-isolation_effect_SS3_30_120
-isolation_effect_SS3_30_120_se
+#isolation_effect_SS3_30_120
+#isolation_effect_SS3_30_120_se
 
 isolation_effect_SS3_upper_30_120 <- isolation_effect_SS3_30_120 + (z*isolation_effect_SS3_30_120_se)
 isolation_effect_SS3_lower_30_120 <- isolation_effect_SS3_30_120 - (z*isolation_effect_SS3_30_120_se)
@@ -491,15 +413,11 @@ fit_SS3_isolation_effect_120_480 <- manyglm(com_SS3_mvabund ~ relevel(fish_SS3, 
 
 isolation_effect_SS3_120_480<-fit_SS3_isolation_effect_120_480$coefficients[4,]
 isolation_effect_SS3_120_480_se <-fit_SS3_isolation_effect_120_480$stderr.coefficients[4,]
-isolation_effect_SS3_120_480_se[which(isolation_effect_SS3_120_480_se>100)] <- fit_SS3_isolation_effect_120_480$stderr.coefficients[1,][which(isolation_effect_SS3_120_480_se>100)]
-fit_SS3_isolation_effect_120_480 <- manyglm(com_SS3_mvabund ~ relevel(fish_SS3, ref = "absent") * relevel(isolation_SS3, ref = "480"), family = "negative.binomial")
-isolation_effect_SS3_120_480_se[which(isolation_effect_SS3_120_480_se>100)] <- fit_SS3_isolation_effect_120_480$stderr.coefficients[1,][which(isolation_effect_SS3_120_480_se>100)]
-
-isolation_effect_SS3_120_480[which(isolation_effect_SS3_120_480_se>100)] <- 0
 isolation_effect_SS3_120_480_se[which(isolation_effect_SS3_120_480_se>100)] <- 0
+isolation_effect_SS3_120_480[which(isolation_effect_SS3_120_480_se == 0 & isolation_effect_SS3_120_480 < 0.01 & isolation_effect_SS3_120_480 > -0.01)] <- 0
 
-isolation_effect_SS3_120_480
-isolation_effect_SS3_120_480_se
+#isolation_effect_SS3_120_480
+#isolation_effect_SS3_120_480_se
 
 isolation_effect_SS3_upper_120_480 <- isolation_effect_SS3_120_480 + (z*isolation_effect_SS3_120_480_se)
 isolation_effect_SS3_lower_120_480 <- isolation_effect_SS3_120_480 - (z*isolation_effect_SS3_120_480_se)
@@ -512,15 +430,11 @@ fit_SS3_isolation_effect_30_480 <- manyglm(com_SS3_mvabund ~ relevel(fish_SS3, r
 
 isolation_effect_SS3_30_480<-fit_SS3_isolation_effect_30_480$coefficients[4,]
 isolation_effect_SS3_30_480_se <-fit_SS3_isolation_effect_30_480$stderr.coefficients[4,]
-isolation_effect_SS3_30_480_se[which(isolation_effect_SS3_30_480_se>100)] <- fit_SS3_isolation_effect_30_480$stderr.coefficients[1,][which(isolation_effect_SS3_30_480_se>100)]
-fit_SS3_isolation_effect_30_480 <- manyglm(com_SS3_mvabund ~ relevel(fish_SS3, ref = "absent") * relevel(isolation_SS3, ref = "480"), family = "negative.binomial")
-isolation_effect_SS3_30_480_se[which(isolation_effect_SS3_30_480_se>100)] <- fit_SS3_isolation_effect_30_480$stderr.coefficients[1,][which(isolation_effect_SS3_30_480_se>100)]
-
-isolation_effect_SS3_30_480[which(isolation_effect_SS3_30_480_se>100)] <- 0
 isolation_effect_SS3_30_480_se[which(isolation_effect_SS3_30_480_se>100)] <- 0
+isolation_effect_SS3_30_480[which(isolation_effect_SS3_30_480_se == 0 & isolation_effect_SS3_30_480 < 0.01 & isolation_effect_SS3_30_480 > -0.01)] <- 0
 
-isolation_effect_SS3_30_480
-isolation_effect_SS3_30_480_se
+#isolation_effect_SS3_30_480
+#isolation_effect_SS3_30_480_se
 
 isolation_effect_SS3_upper_30_480 <- isolation_effect_SS3_30_480 + (z*isolation_effect_SS3_30_480_se)
 isolation_effect_SS3_lower_30_480 <- isolation_effect_SS3_30_480 - (z*isolation_effect_SS3_30_480_se)
@@ -557,15 +471,11 @@ fit_SS1_isolation_effect_fish_30_120 <- manyglm(com_SS1_mvabund ~ relevel(fish_S
 
 isolation_effect_fish_SS1_30_120<-fit_SS1_isolation_effect_fish_30_120$coefficients[3,]
 isolation_effect_fish_SS1_30_120_se <-fit_SS1_isolation_effect_fish_30_120$stderr.coefficients[3,]
-isolation_effect_fish_SS1_30_120_se[which(isolation_effect_fish_SS1_30_120_se>100)] <- fit_SS1_isolation_effect_fish_30_120$stderr.coefficients[1,][which(isolation_effect_fish_SS1_30_120_se>100)]
-fit_SS1_isolation_effect_fish_30_120 <- manyglm(com_SS1_mvabund ~ relevel(fish_SS1, ref = "present") * relevel(isolation_SS1, ref = "120"), family = "negative.binomial")
-isolation_effect_fish_SS1_30_120_se[which(isolation_effect_fish_SS1_30_120_se>100)] <- fit_SS1_isolation_effect_fish_30_120$stderr.coefficients[1,][which(isolation_effect_fish_SS1_30_120_se>100)]
-
-isolation_effect_fish_SS1_30_120[which(isolation_effect_fish_SS1_30_120_se>100)] <- 0
 isolation_effect_fish_SS1_30_120_se[which(isolation_effect_fish_SS1_30_120_se>100)] <- 0
+isolation_effect_fish_SS1_30_120[which(isolation_effect_fish_SS1_30_120_se == 0 & isolation_effect_fish_SS1_30_120 < 0.01 & isolation_effect_fish_SS1_30_120 > -0.01)] <- 0
 
-isolation_effect_fish_SS1_30_120
-isolation_effect_fish_SS1_30_120_se
+#isolation_effect_fish_SS1_30_120
+#isolation_effect_fish_SS1_30_120_se
 
 isolation_effect_fish_SS1_upper_30_120 <- isolation_effect_fish_SS1_30_120 + (z*isolation_effect_fish_SS1_30_120_se)
 isolation_effect_fish_SS1_lower_30_120 <- isolation_effect_fish_SS1_30_120 - (z*isolation_effect_fish_SS1_30_120_se)
@@ -579,15 +489,11 @@ fit_SS1_isolation_effect_fish_120_480 <- manyglm(com_SS1_mvabund ~ relevel(fish_
 
 isolation_effect_fish_SS1_120_480<-fit_SS1_isolation_effect_fish_120_480$coefficients[4,]
 isolation_effect_fish_SS1_120_480_se <-fit_SS1_isolation_effect_fish_120_480$stderr.coefficients[4,]
-isolation_effect_fish_SS1_120_480_se[which(isolation_effect_fish_SS1_120_480_se>100)] <- fit_SS1_isolation_effect_fish_120_480$stderr.coefficients[1,][which(isolation_effect_fish_SS1_120_480_se>100)]
-fit_SS1_isolation_effect_fish_120_480 <- manyglm(com_SS1_mvabund ~ relevel(fish_SS1, ref = "present") * relevel(isolation_SS1, ref = "480"), family = "negative.binomial")
-isolation_effect_fish_SS1_120_480_se[which(isolation_effect_fish_SS1_120_480_se>100)] <- fit_SS1_isolation_effect_fish_120_480$stderr.coefficients[1,][which(isolation_effect_fish_SS1_120_480_se>100)]
-
-isolation_effect_fish_SS1_120_480[which(isolation_effect_fish_SS1_120_480_se>100)] <- 0
 isolation_effect_fish_SS1_120_480_se[which(isolation_effect_fish_SS1_120_480_se>100)] <- 0
+isolation_effect_fish_SS1_120_480[which(isolation_effect_fish_SS1_120_480_se == 0 & isolation_effect_fish_SS1_120_480 < 0.01 & isolation_effect_fish_SS1_120_480 > -0.01)] <- 0
 
-isolation_effect_fish_SS1_120_480
-isolation_effect_fish_SS1_120_480_se
+#isolation_effect_fish_SS1_120_480
+#isolation_effect_fish_SS1_120_480_se
 
 isolation_effect_fish_SS1_upper_120_480 <- isolation_effect_fish_SS1_120_480 + (z*isolation_effect_fish_SS1_120_480_se)
 isolation_effect_fish_SS1_lower_120_480 <- isolation_effect_fish_SS1_120_480 - (z*isolation_effect_fish_SS1_120_480_se)
@@ -600,15 +506,11 @@ fit_SS1_isolation_effect_fish_30_480 <- manyglm(com_SS1_mvabund ~ relevel(fish_S
 
 isolation_effect_fish_SS1_30_480<-fit_SS1_isolation_effect_fish_30_480$coefficients[4,]
 isolation_effect_fish_SS1_30_480_se <-fit_SS1_isolation_effect_fish_30_480$stderr.coefficients[4,]
-isolation_effect_fish_SS1_30_480_se[which(isolation_effect_fish_SS1_30_480_se>100)] <- fit_SS1_isolation_effect_fish_30_480$stderr.coefficients[1,][which(isolation_effect_fish_SS1_30_480_se>100)]
-fit_SS1_isolation_effect_fish_30_480 <- manyglm(com_SS1_mvabund ~ relevel(fish_SS1, ref = "present") * relevel(isolation_SS1, ref = "480"), family = "negative.binomial")
-isolation_effect_fish_SS1_30_480_se[which(isolation_effect_fish_SS1_30_480_se>100)] <- fit_SS1_isolation_effect_fish_30_480$stderr.coefficients[1,][which(isolation_effect_fish_SS1_30_480_se>100)]
-
-isolation_effect_fish_SS1_30_480[which(isolation_effect_fish_SS1_30_480_se>100)] <- 0
 isolation_effect_fish_SS1_30_480_se[which(isolation_effect_fish_SS1_30_480_se>100)] <- 0
+isolation_effect_fish_SS1_30_480[which(isolation_effect_fish_SS1_30_480_se == 0 & isolation_effect_fish_SS1_30_480 < 0.01 & isolation_effect_fish_SS1_30_480 > -0.01)] <- 0
 
-isolation_effect_fish_SS1_30_480
-isolation_effect_fish_SS1_30_480_se
+#isolation_effect_fish_SS1_30_480
+#isolation_effect_fish_SS1_30_480_se
 
 isolation_effect_fish_SS1_upper_30_480 <- isolation_effect_fish_SS1_30_480 + (z*isolation_effect_fish_SS1_30_480_se)
 isolation_effect_fish_SS1_lower_30_480 <- isolation_effect_fish_SS1_30_480 - (z*isolation_effect_fish_SS1_30_480_se)
@@ -623,15 +525,11 @@ fit_SS2_isolation_effect_fish_30_120 <- manyglm(com_SS2_mvabund ~ relevel(fish_S
 
 isolation_effect_fish_SS2_30_120<-fit_SS2_isolation_effect_fish_30_120$coefficients[3,]
 isolation_effect_fish_SS2_30_120_se <-fit_SS2_isolation_effect_fish_30_120$stderr.coefficients[3,]
-isolation_effect_fish_SS2_30_120_se[which(isolation_effect_fish_SS2_30_120_se>100)] <- fit_SS2_isolation_effect_fish_30_120$stderr.coefficients[1,][which(isolation_effect_fish_SS2_30_120_se>100)]
-fit_SS2_isolation_effect_fish_30_120 <- manyglm(com_SS2_mvabund ~ relevel(fish_SS2, ref = "present") * relevel(isolation_SS2, ref = "120"), family = "negative.binomial")
-isolation_effect_fish_SS2_30_120_se[which(isolation_effect_fish_SS2_30_120_se>100)] <- fit_SS2_isolation_effect_fish_30_120$stderr.coefficients[1,][which(isolation_effect_fish_SS2_30_120_se>100)]
-
-isolation_effect_fish_SS2_30_120[which(isolation_effect_fish_SS2_30_120_se>100)] <- 0
 isolation_effect_fish_SS2_30_120_se[which(isolation_effect_fish_SS2_30_120_se>100)] <- 0
+isolation_effect_fish_SS2_30_120[which(isolation_effect_fish_SS2_30_120_se == 0 & isolation_effect_fish_SS2_30_120 < 0.01 & isolation_effect_fish_SS2_30_120 > -0.01)] <- 0
 
-isolation_effect_fish_SS2_30_120
-isolation_effect_fish_SS2_30_120_se
+#isolation_effect_fish_SS2_30_120
+#isolation_effect_fish_SS2_30_120_se
 
 isolation_effect_fish_SS2_upper_30_120 <- isolation_effect_fish_SS2_30_120 + (z*isolation_effect_fish_SS2_30_120_se)
 isolation_effect_fish_SS2_lower_30_120 <- isolation_effect_fish_SS2_30_120 - (z*isolation_effect_fish_SS2_30_120_se)
@@ -645,15 +543,11 @@ fit_SS2_isolation_effect_fish_120_480 <- manyglm(com_SS2_mvabund ~ relevel(fish_
 
 isolation_effect_fish_SS2_120_480<-fit_SS2_isolation_effect_fish_120_480$coefficients[4,]
 isolation_effect_fish_SS2_120_480_se <-fit_SS2_isolation_effect_fish_120_480$stderr.coefficients[4,]
-isolation_effect_fish_SS2_120_480_se[which(isolation_effect_fish_SS2_120_480_se>100)] <- fit_SS2_isolation_effect_fish_120_480$stderr.coefficients[1,][which(isolation_effect_fish_SS2_120_480_se>100)]
-fit_SS2_isolation_effect_fish_120_480 <- manyglm(com_SS2_mvabund ~ relevel(fish_SS2, ref = "present") * relevel(isolation_SS2, ref = "480"), family = "negative.binomial")
-isolation_effect_fish_SS2_120_480_se[which(isolation_effect_fish_SS2_120_480_se>100)] <- fit_SS2_isolation_effect_fish_120_480$stderr.coefficients[1,][which(isolation_effect_fish_SS2_120_480_se>100)]
-
-isolation_effect_fish_SS2_120_480[which(isolation_effect_fish_SS2_120_480_se>100)] <- 0
 isolation_effect_fish_SS2_120_480_se[which(isolation_effect_fish_SS2_120_480_se>100)] <- 0
+isolation_effect_fish_SS2_120_480[which(isolation_effect_fish_SS2_120_480_se == 0 & isolation_effect_fish_SS2_120_480 < 0.01 & isolation_effect_fish_SS2_120_480 > -0.01)] <- 0
 
-isolation_effect_fish_SS2_120_480
-isolation_effect_fish_SS2_120_480_se
+#isolation_effect_fish_SS2_120_480
+#isolation_effect_fish_SS2_120_480_se
 
 isolation_effect_fish_SS2_upper_120_480 <- isolation_effect_fish_SS2_120_480 + (z*isolation_effect_fish_SS2_120_480_se)
 isolation_effect_fish_SS2_lower_120_480 <- isolation_effect_fish_SS2_120_480 - (z*isolation_effect_fish_SS2_120_480_se)
@@ -666,15 +560,11 @@ fit_SS2_isolation_effect_fish_30_480 <- manyglm(com_SS2_mvabund ~ relevel(fish_S
 
 isolation_effect_fish_SS2_30_480<-fit_SS2_isolation_effect_fish_30_480$coefficients[4,]
 isolation_effect_fish_SS2_30_480_se <-fit_SS2_isolation_effect_fish_30_480$stderr.coefficients[4,]
-isolation_effect_fish_SS2_30_480_se[which(isolation_effect_fish_SS2_30_480_se>100)] <- fit_SS2_isolation_effect_fish_30_480$stderr.coefficients[1,][which(isolation_effect_fish_SS2_30_480_se>100)]
-fit_SS2_isolation_effect_fish_30_480 <- manyglm(com_SS2_mvabund ~ relevel(fish_SS2, ref = "present") * relevel(isolation_SS2, ref = "480"), family = "negative.binomial")
-isolation_effect_fish_SS2_30_480_se[which(isolation_effect_fish_SS2_30_480_se>100)] <- fit_SS2_isolation_effect_fish_30_480$stderr.coefficients[1,][which(isolation_effect_fish_SS2_30_480_se>100)]
-
-isolation_effect_fish_SS2_30_480[which(isolation_effect_fish_SS2_30_480_se>100)] <- 0
 isolation_effect_fish_SS2_30_480_se[which(isolation_effect_fish_SS2_30_480_se>100)] <- 0
+isolation_effect_fish_SS2_30_480[which(isolation_effect_fish_SS2_30_480_se == 0 & isolation_effect_fish_SS2_30_480 < 0.01 & isolation_effect_fish_SS2_30_480 > -0.01)] <- 0
 
-isolation_effect_fish_SS2_30_480
-isolation_effect_fish_SS2_30_480_se
+#isolation_effect_fish_SS2_30_480
+#isolation_effect_fish_SS2_30_480_se
 
 isolation_effect_fish_SS2_upper_30_480 <- isolation_effect_fish_SS2_30_480 + (z*isolation_effect_fish_SS2_30_480_se)
 isolation_effect_fish_SS2_lower_30_480 <- isolation_effect_fish_SS2_30_480 - (z*isolation_effect_fish_SS2_30_480_se)
@@ -708,15 +598,11 @@ fit_SS3_isolation_effect_fish_30_120 <- manyglm(com_SS3_mvabund ~ relevel(fish_S
 
 isolation_effect_fish_SS3_30_120<-fit_SS3_isolation_effect_fish_30_120$coefficients[3,]
 isolation_effect_fish_SS3_30_120_se <-fit_SS3_isolation_effect_fish_30_120$stderr.coefficients[3,]
-isolation_effect_fish_SS3_30_120_se[which(isolation_effect_fish_SS3_30_120_se>100)] <- fit_SS3_isolation_effect_fish_30_120$stderr.coefficients[1,][which(isolation_effect_fish_SS3_30_120_se>100)]
-fit_SS3_isolation_effect_fish_30_120 <- manyglm(com_SS3_mvabund ~ relevel(fish_SS3, ref = "present") * relevel(isolation_SS3, ref = "120"), family = "negative.binomial")
-isolation_effect_fish_SS3_30_120_se[which(isolation_effect_fish_SS3_30_120_se>100)] <- fit_SS3_isolation_effect_fish_30_120$stderr.coefficients[1,][which(isolation_effect_fish_SS3_30_120_se>100)]
-
-isolation_effect_fish_SS3_30_120[which(isolation_effect_fish_SS3_30_120_se>100)] <- 0
 isolation_effect_fish_SS3_30_120_se[which(isolation_effect_fish_SS3_30_120_se>100)] <- 0
+isolation_effect_fish_SS3_30_120[which(isolation_effect_fish_SS3_30_120_se == 0 & isolation_effect_fish_SS3_30_120 < 0.01 & isolation_effect_fish_SS3_30_120 > -0.01)] <- 0
 
-isolation_effect_fish_SS3_30_120
-isolation_effect_fish_SS3_30_120_se
+#isolation_effect_fish_SS3_30_120
+#isolation_effect_fish_SS3_30_120_se
 
 isolation_effect_fish_SS3_upper_30_120 <- isolation_effect_fish_SS3_30_120 + (z*isolation_effect_fish_SS3_30_120_se)
 isolation_effect_fish_SS3_lower_30_120 <- isolation_effect_fish_SS3_30_120 - (z*isolation_effect_fish_SS3_30_120_se)
@@ -730,15 +616,11 @@ fit_SS3_isolation_effect_fish_120_480 <- manyglm(com_SS3_mvabund ~ relevel(fish_
 
 isolation_effect_fish_SS3_120_480<-fit_SS3_isolation_effect_fish_120_480$coefficients[4,]
 isolation_effect_fish_SS3_120_480_se <-fit_SS3_isolation_effect_fish_120_480$stderr.coefficients[4,]
-isolation_effect_fish_SS3_120_480_se[which(isolation_effect_fish_SS3_120_480_se>100)] <- fit_SS3_isolation_effect_fish_120_480$stderr.coefficients[1,][which(isolation_effect_fish_SS3_120_480_se>100)]
-fit_SS3_isolation_effect_fish_120_480 <- manyglm(com_SS3_mvabund ~ relevel(fish_SS3, ref = "present") * relevel(isolation_SS3, ref = "480"), family = "negative.binomial")
-isolation_effect_fish_SS3_120_480_se[which(isolation_effect_fish_SS3_120_480_se>100)] <- fit_SS3_isolation_effect_fish_120_480$stderr.coefficients[1,][which(isolation_effect_fish_SS3_120_480_se>100)]
-
-isolation_effect_fish_SS3_120_480[which(isolation_effect_fish_SS3_120_480_se>100)] <- 0
 isolation_effect_fish_SS3_120_480_se[which(isolation_effect_fish_SS3_120_480_se>100)] <- 0
+isolation_effect_fish_SS3_120_480[which(isolation_effect_fish_SS3_120_480_se == 0 & isolation_effect_fish_SS3_120_480 < 0.01 & isolation_effect_fish_SS3_120_480 > -0.01)] <- 0
 
-isolation_effect_fish_SS3_120_480
-isolation_effect_fish_SS3_120_480_se
+#isolation_effect_fish_SS3_120_480
+#isolation_effect_fish_SS3_120_480_se
 
 isolation_effect_fish_SS3_upper_120_480 <- isolation_effect_fish_SS3_120_480 + (z*isolation_effect_fish_SS3_120_480_se)
 isolation_effect_fish_SS3_lower_120_480 <- isolation_effect_fish_SS3_120_480 - (z*isolation_effect_fish_SS3_120_480_se)
@@ -751,15 +633,11 @@ fit_SS3_isolation_effect_fish_30_480 <- manyglm(com_SS3_mvabund ~ relevel(fish_S
 
 isolation_effect_fish_SS3_30_480<-fit_SS3_isolation_effect_fish_30_480$coefficients[4,]
 isolation_effect_fish_SS3_30_480_se <-fit_SS3_isolation_effect_fish_30_480$stderr.coefficients[4,]
-isolation_effect_fish_SS3_30_480_se[which(isolation_effect_fish_SS3_30_480_se>100)] <- fit_SS3_isolation_effect_fish_30_480$stderr.coefficients[1,][which(isolation_effect_fish_SS3_30_480_se>100)]
-fit_SS3_isolation_effect_fish_30_480 <- manyglm(com_SS3_mvabund ~ relevel(fish_SS3, ref = "present") * relevel(isolation_SS3, ref = "480"), family = "negative.binomial")
-isolation_effect_fish_SS3_30_480_se[which(isolation_effect_fish_SS3_30_480_se>100)] <- fit_SS3_isolation_effect_fish_30_480$stderr.coefficients[1,][which(isolation_effect_fish_SS3_30_480_se>100)]
-
-isolation_effect_fish_SS3_30_480[which(isolation_effect_fish_SS3_30_480_se>100)] <- 0
 isolation_effect_fish_SS3_30_480_se[which(isolation_effect_fish_SS3_30_480_se>100)] <- 0
+isolation_effect_fish_SS3_30_480[which(isolation_effect_fish_SS3_30_480_se == 0 & isolation_effect_fish_SS3_30_480 < 0.01 & isolation_effect_fish_SS3_30_480 > -0.01)] <- 0
 
-isolation_effect_fish_SS3_30_480
-isolation_effect_fish_SS3_30_480_se
+#isolation_effect_fish_SS3_30_480
+#isolation_effect_fish_SS3_30_480_se
 
 isolation_effect_fish_SS3_upper_30_480 <- isolation_effect_fish_SS3_30_480 + (z*isolation_effect_fish_SS3_30_480_se)
 isolation_effect_fish_SS3_lower_30_480 <- isolation_effect_fish_SS3_30_480 - (z*isolation_effect_fish_SS3_30_480_se)

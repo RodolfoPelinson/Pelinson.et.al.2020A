@@ -532,7 +532,18 @@ My_coefplot(c(as.matrix(c(fish_effect_SS2_30[which(TRAITS_SS2$trophic == "Pr")][
                                names(fish_effect_SS2_30[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons])),
             xlab = "Effect on abundance",
             main = "30 m - SS2", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
+```
 
+    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
+    ## zero-length arrow is of indeterminate angle and so skipped
+
+    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
+    ## zero-length arrow is of indeterminate angle and so skipped
+
+    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
+    ## zero-length arrow is of indeterminate angle and so skipped
+
+``` r
 My_coefplot(c(as.matrix(c(fish_effect_SS2_120[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
                           fish_effect_SS2_120[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
             c(as.matrix(c(fish_effect_SS2_upper_120[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
@@ -543,7 +554,18 @@ My_coefplot(c(as.matrix(c(fish_effect_SS2_120[which(TRAITS_SS2$trophic == "Pr")]
                                names(fish_effect_SS2_120[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons])),
             xlab = "Effect on abundance",
             main = "120 m - SS2", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
+```
 
+    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
+    ## zero-length arrow is of indeterminate angle and so skipped
+
+    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
+    ## zero-length arrow is of indeterminate angle and so skipped
+
+    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
+    ## zero-length arrow is of indeterminate angle and so skipped
+
+``` r
 My_coefplot(c(as.matrix(c(fish_effect_SS2_480[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
                           fish_effect_SS2_480[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
             c(as.matrix(c(fish_effect_SS2_upper_480[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
@@ -555,6 +577,18 @@ My_coefplot(c(as.matrix(c(fish_effect_SS2_480[which(TRAITS_SS2$trophic == "Pr")]
             xlab = "Effect on abundance",
             main = "480 m - SS2", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
 ```
+
+    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
+    ## zero-length arrow is of indeterminate angle and so skipped
+
+    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
+    ## zero-length arrow is of indeterminate angle and so skipped
+
+    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
+    ## zero-length arrow is of indeterminate angle and so skipped
+
+    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
+    ## zero-length arrow is of indeterminate angle and so skipped
 
 ![](Community-Structure_files/figure-gfm/plot_effect_fish_SS2-1.png)<!-- -->
 

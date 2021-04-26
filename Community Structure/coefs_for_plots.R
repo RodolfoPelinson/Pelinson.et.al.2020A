@@ -10,7 +10,7 @@ fit_Time_1_2 <- manyglm(com_incomplete_mvabund ~ relevel(survey_incomplete, ref 
 
 effect_Time_1_2<-fit_Time_1_2$coefficients[2,]
 effect_Time_1_2_se <-fit_Time_1_2$stderr.coefficients[2,]
-effect_Time_1_2[which(effect_Time_1_2_se>100)] <- 0
+effect_Time_1_2_se[which(effect_Time_1_2_se>100)] <- 0
 effect_Time_1_2[which(effect_Time_1_2_se == 0 & effect_Time_1_2 < 0.01 & effect_Time_1_2 > -0.01)] <- 0
 
 #effect_Time_1_2

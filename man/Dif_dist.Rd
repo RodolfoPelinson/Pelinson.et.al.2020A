@@ -9,6 +9,7 @@ Dif_dist(
   x1,
   x2,
   LVs = NULL,
+  test = TRUE,
   nperm,
   family,
   num.lv = 2,
@@ -27,6 +28,8 @@ Dif_dist(
 \item{x2}{A vector containing the identity of isolation treatments.}
 
 \item{LVs}{The latent variables or ordination axis to be used to compute centroids. If NULL, GLLVM will be computed. Defaut is NULL.}
+
+\item{test}{Should the significance of the difference between distances be tested? Defaut is set to TRUE. If FALSE, all arguments related to test will be ignored.}
 
 \item{nperm}{The number of permutations.}
 

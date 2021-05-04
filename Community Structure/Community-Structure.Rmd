@@ -1,62 +1,69 @@
-Community Structure
-================
-Rodolfo Pelinson
-14/10/2020
+---
+title: "Community Structure"
+author: "Rodolfo Pelinson"
+date: "14/10/2020"
+output: github_document
+editor_options: 
+  chunk_output_type: console
+---
 
-The goal of PredatorIsolationComm is to walk the user through the
-statistical analysis presented in:  
-**“Pelinson et al 2020. Top predator introduction changes the effects of
-spatial isolation on freshwater community structure”**  
-DOI: <https://doi.org/10.1101/857318>
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
-You can install the last version of `PredatorIsolationComm` package from
-my [GitHub](https://github.com/RodolfoPelinson/PredatorIsolationComm)
-with:
 
-``` r
+The goal of PredatorIsolationComm is to walk the user through the statistical analysis presented in:  
+**"Pelinson et al 2020. Top predator introduction changes the effects of spatial isolation on freshwater community structure"**  
+DOI: [https://doi.org/10.1101/857318](https://doi.org/10.1101/857318)  
+
+
+You can install the last version of `PredatorIsolationComm` package from my  [GitHub](https://github.com/RodolfoPelinson/PredatorIsolationComm) with:
+
+``` {r installing package not eval, eval = FALSE, echo = T}
 install.packages("devtools")
 devtools::install_github("RodolfoPelinson/PredatorIsolationComm")
 library("PredatorIsolationComm")
+
 ```
 
-This will give you access to all the data and functions used to produce
-the results shown in “Pelinson et al 2020. Top predator introduction
-changes the effects of spatial isolation on freshwater community
-structure”.
+This will give you access to all the data and functions used to produce the results shown in "Pelinson et al 2020. Top predator introduction changes the effects of spatial isolation on freshwater community structure".
+
+
+``` {r installing package, eval = T, , echo = FALSE}
+library("PredatorIsolationComm")
+```
 
 Other packages used here are:  
 `vegan` version 2.5-6  
 `mvabund` version 4.1.3  
 `gllvm` version 1.2.2  
-`permute` version 0.9-5
+`permute` version 0.9-5  
 
-``` r
+
+``` {r installing packages2, eval = T, results = "hide", warning = F, message = F}
 library(vegan)
 library(permute)
 library(mvabund)
 library(gllvm)
 ```
 
+
+
 ## Testing for differences in community structure
 
 Loading necessary data.
-
-``` r
+```{r loading community data}
 data(com,
      com_SS1, fish_SS1,isolation_SS1, TRAITS_SS1, 
      com_SS2, fish_SS2,isolation_SS2, TRAITS_SS2,
      com_SS3, fish_SS3,isolation_SS3, TRAITS_SS3)
 ```
 
-When we considered all surveys together, we had to exclude ponds that
-were missing in the third survey from the second and first surveys to
-achieve a balanced design. The balanced design was necessary for our
-permutation procedure, which accounted by the non-independence of ponds
-sampled in different moments in time. The permutation procedure below
-shuffles rows freely ponds freely within the same pond IDs, and then
-pond IDs freely across treatments.
 
-``` r
+
+When we considered all surveys together, we had to exclude ponds that were missing in the third survey from the second and first surveys to achieve a balanced design. The balanced design was necessary for our permutation procedure, which accounted by the non-independence of ponds sampled in different moments in time. The permutation procedure below shuffles rows freely ponds freely within the same pond IDs, and then pond IDs freely across treatments.
+
+```{r permutation, eval = T, cache=T}
 com_incomplete <- com[which(ID != "A4" & ID != "B3" & ID != "C3" & ID != "C4"),]
 com_incomplete_oc <- decostand(com_incomplete, method = "pa")
 com_incomplete <- com_incomplete[,which(colSums(com_incomplete_oc) > 3)]
@@ -74,41 +81,29 @@ control <- permute::how(within = permute::Within(type = 'free'),
 permutations <- shuffleSet(nrow(com_incomplete), control = control)
 ```
 
-Before running the models, we looked for the best probability
-distribution to model our community data (abundance). We considered
-Poisson and Negative Binomial distributions.
-
-``` r
+Before running the models, we looked for the best probability distribution to model our community data (abundance). We considered Poisson and Negative Binomial distributions. 
+```{r checking distribution,dpi=150, cache = T, fig.height=5, fig.width=5}
 com_incomplete_mvabund <- mvabund(com_incomplete)
 
 meanvar.plot(com_incomplete_mvabund, table =F, pch = 16) 
 abline(a = 0, b = 1, lwd = 2)
 box(lwd = 2)
-```
 
-![](Community-Structure_files/figure-gfm/checking%20distribution-1.png)<!-- -->
 
-``` r
 fit_incosistent_interaction_NB <- manyglm(com_incomplete_mvabund ~ survey_incomplete * (fish_incomplete * isolation_incomplete), family = "negative.binomial", cor.type = "I")
 fit_incosistent_interaction_POIS <- manyglm(com_incomplete_mvabund ~ survey_incomplete * (fish_incomplete * isolation_incomplete), family = "poisson", cor.type = "I")
 
 plot(fit_incosistent_interaction_POIS)
-```
-
-![](Community-Structure_files/figure-gfm/checking%20distribution-2.png)<!-- -->
-
-``` r
 plot(fit_incosistent_interaction_NB)
-```
 
-![](Community-Structure_files/figure-gfm/checking%20distribution-3.png)<!-- -->
-We chose to use the Negative Binomial distribution to model data after
-inspecting plots of variances against means and the spread of Dunn-Smyth
-residuals against fitted values.
+
+```
+We chose to use the Negative Binomial distribution to model data after inspecting plots of variances against means and the spread of Dunn-Smyth residuals against fitted values. 
+
+
 
 Now running the models and multivariate Likelihood Ratio Tests.
-
-``` r
+```{r mvabund models all surveys, cache = T, eval = T}
 fit_no_effect <- manyglm(com_incomplete_mvabund ~ 1, family = "negative.binomial", cor.type = "I")
 fit_Time <- manyglm(com_incomplete_mvabund ~ survey_incomplete, family = "negative.binomial", cor.type = "I")
 fit_Time_fish <- manyglm(com_incomplete_mvabund ~ survey_incomplete + fish_incomplete, family = "negative.binomial", cor.type = "I")
@@ -124,45 +119,14 @@ anova_incomplete <- anova(fit_no_effect,
                                   fit_Time_fish_isolation,
                                   fit_Time_interaction,
                                   fit_incosistent_interaction, bootID = permutations ,  test = "LR", resamp = "pit.trap")
-```
-
-    ## Using <int> bootID matrix from input. 
-    ## Time elapsed: 0 hr 28 min 36 sec
-
-``` r
 anova_incomplete
+
 ```
 
-    ## Analysis of Deviance Table
-    ## 
-    ## fit_no_effect: com_incomplete_mvabund ~ 1
-    ## fit_Time: com_incomplete_mvabund ~ survey_incomplete
-    ## fit_Time_fish: com_incomplete_mvabund ~ survey_incomplete + fish_incomplete
-    ## fit_Time_fish_isolation: com_incomplete_mvabund ~ survey_incomplete + fish_incomplete + isolation_incomplete
-    ## fit_Time_interaction: com_incomplete_mvabund ~ survey_incomplete + (fish_incomplete * isolation_incomplete)
-    ## fit_incosistent_interaction: com_incomplete_mvabund ~ survey_incomplete * (fish_incomplete * isolation_incomplete)
-    ## 
-    ## Multivariate test:
-    ##                             Res.Df Df.diff   Dev Pr(>Dev)    
-    ## fit_no_effect                   59                           
-    ## fit_Time                        57       2 392.8   <2e-16 ***
-    ## fit_Time_fish                   56       1  89.2   <2e-16 ***
-    ## fit_Time_fish_isolation         54       2 109.2    0.001 ***
-    ## fit_Time_interaction            52       2 120.3   <2e-16 ***
-    ## fit_incosistent_interaction     42      10 210.6    0.036 *  
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## Arguments:
-    ##  Test statistics calculated assuming uncorrelated response (for faster computation) 
-    ##  P-value calculated using 10000 iterations via PIT-trap resampling.
+Because we had significant three way interactions, we choose to run separete tests for each survey separetely.
 
-Because we had significant three way interactions, we choose to run
-separete tests for each survey separetely.
-
-First we have to change the abundance matrices into the right format fot
-`mvabund` and also prepare other matrices that will be used.
-
-``` r
+First we have to change the abundance matrices into the right format fot `mvabund` and also prepare other matrices that will be used.
+```{r formating matrices, eval = T}
 com_SS1_mvabund <- mvabund(com_SS1)
 com_SS2_mvabund <- mvabund(com_SS2)
 com_SS3_mvabund <- mvabund(com_SS3)
@@ -174,45 +138,22 @@ env_SS3 <- data.frame(fish_SS3, isolation_SS3)
 com_oc <- decostand(com, method = "pa")
 ```
 
-### First Survey
 
-``` r
+### First Survey
+```{r mvabund models SS1, cache = T, eval = T}
+
 fit_SS1_no_effect <- manyglm(com_SS1_mvabund ~  1, family = "negative.binomial")
 fit_SS1_fish <- manyglm(com_SS1_mvabund ~  fish_SS1, family = "negative.binomial")
 fit_SS1_isolation <- manyglm(com_SS1_mvabund ~  isolation_SS1, family = "negative.binomial")
 fit_SS1_interaction <- manyglm(com_SS1_mvabund ~  fish_SS1*isolation_SS1, family = "negative.binomial")
 
 set.seed(3);anova_SS1 <- anova(fit_SS1_interaction, nBoot = 10000,  p.uni  = "none", test = "LR")
-```
-
-    ## Time elapsed: 0 hr 2 min 26 sec
-
-``` r
 anova_SS1
 ```
-
-    ## Analysis of Deviance Table
-    ## 
-    ## Model: com_SS1_mvabund ~ fish_SS1 * isolation_SS1
-    ## 
-    ## Multivariate test:
-    ##                        Res.Df Df.diff   Dev Pr(>Dev)  
-    ## (Intercept)                23                         
-    ## fish_SS1                   22       1 19.01    0.106  
-    ## isolation_SS1              20       2 24.38    0.398  
-    ## fish_SS1:isolation_SS1     18       2 42.60    0.024 *
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## Arguments:
-    ##  Test statistics calculated assuming uncorrelated response (for faster computation) 
-    ##  P-value calculated using 10000 iterations via PIT-trap resampling.
-
-There is a significant interaction between isolation and presence of
-fish.
+There is a significant interaction between isolation and presence of fish.
 
 Now, testing if the effect of treatments is mediated by trophic level:
-
-``` r
+```{r mvabund models SS1 trait, cache = T, eval = T}
 env_SS1 <- data.frame(fish_SS1, isolation_SS1)
 
 fit_SS1_no_trait_interaction <- traitglm(L = com_SS1, R = env_SS1, Q = TRAITS_SS1, formula = ~ isolation_SS1 * fish_SS1, method = "manyglm", col.intercepts = T)
@@ -223,27 +164,11 @@ set.seed(3);anova_SS1_trait_interaction <- anova.traitglm(fit_SS1_no_trait_inter
                                               nBoot = 10000, test = "LR", show.time = "none")
 anova_SS1_trait_interaction
 ```
-
-    ## Analysis of Deviance Table
-    ## 
-    ## Model 1: ~isolation_SS1 * fish_SS1
-    ## Model 2: ~(isolation_SS1:trophic) * (fish_SS1:trophic)
-    ## 
-    ## Multivariate test:
-    ##         Res.Df Df.diff   Dev Pr(>Dev)  
-    ## Model 1    202                         
-    ## Model 2    197       5 19.26    0.096 .
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## Arguments: P-value calculated using 10000 iterations via PIT-trap block resampling.
-
 No, it is not!
 
-Plotting the ordination. We performed a model based unconstrained
-ordination using function `gllvm` from package `gllvm` and the
-`plot_ordination` function from this package.
+Plotting the ordination. We performed a model based unconstrained ordination using function `gllvm` from package `gllvm` and the `plot_ordination` function from this package.
+```{r ordination SS1, fig.height=5, fig.width=5, dpi = 150, cache = T}
 
-``` r
 fit_gllvm_no_effect_SS1<- gllvm(com_SS1,family = "negative.binomial", method = "VA", row.eff = F,n.init = 50, seed = 3, num.lv = 2)
 
 
@@ -270,25 +195,18 @@ plot_ordination(fit_gllvm_no_effect_SS1, x1 = fish_SS1, x2 = isolation_SS1,
                 legend_ncol = 2, legend_horiz = F,species_col = colors_SS1, species_names = new_names_SS1, main = "First Survey", species_size = TRAITS_SS1$volume_log, name_species_size = TRAITS_SS1$volume_log*0.21)
 ```
 
-![](Community-Structure_files/figure-gfm/ordination%20SS1-1.png)<!-- -->
 
-Plotting pairwise comparisons coefficients and 95% confidence intervals
-for each species. There is a lot of code (I hope to improve it in the
-future!) to get the actual coefficients and their respective intervals.
-They are all in the file `coefs_for_plot.R`. We can call that file
-through the `source` function. You may have to download the file
-manually if you wish to run this code.
-
-``` r
+Plotting pairwise comparisons coefficients and 95% confidence intervals for each species. There is a lot of code (I hope to improve it in the future!) to get the actual coefficients and their respective intervals. They are all in the file `coefs_for_plot.R`. We can call that file through the `source` function. You may have to download the file manually if you wish to run this code.
+```{r source coeffitients}
 source("coefs_for_plots.R")
+
 ```
 
-Now we can plot the coefficients using `My_coefplot` function from this
-package.
+
+Now we can plot the coefficients using `My_coefplot` function from this package.
 
 First, we compare the effect of fish in each isolation distance.
-
-``` r
+```{r plot_effect_fish_SS1, warning=F, dpi=150}
 ab_SS1_pred <- order(colSums(com[which(TRAITS$trophic == "Pr")])[which(colSums(com_oc[which(survey == "1"),which(TRAITS$trophic == "Pr")]) > 2)], decreasing = T)
 ab_SS1_cons <- order(colSums(com[which(TRAITS$trophic == "Non_Pred")])[which(colSums(com_oc[which(survey == "1"),which(TRAITS$trophic == "Non_Pred")]) > 2)], decreasing = T)
 
@@ -330,11 +248,9 @@ My_coefplot(c(as.matrix(c(fish_effect_SS1_480[which(TRAITS_SS1$trophic == "Pr")]
             main = "480 m - SS1", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 2)
 ```
 
-![](Community-Structure_files/figure-gfm/plot_effect_fish_SS1-1.png)<!-- -->
 
 Now, the pairwise effect of isolation for ponds without fish.
-
-``` r
+```{r plot_effect_isolation_fishless_SS1, warning=F, dpi=150}
 par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
 
 My_coefplot(c(as.matrix(c(isolation_effect_SS1_30_120[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
@@ -371,13 +287,11 @@ My_coefplot(c(as.matrix(c(isolation_effect_SS1_120_480[which(TRAITS_SS1$trophic 
                                names(isolation_effect_SS1_120_480[which(TRAITS_SS1$trophic == "Non_Pred")][ab_SS1_cons])),
             xlab = "Effect on abundance",
             main = "120 to 480 - SS1", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 2)
+
 ```
 
-![](Community-Structure_files/figure-gfm/plot_effect_isolation_fishless_SS1-1.png)<!-- -->
-
 And, the pairwise effect of isolation for ponds with fish.
-
-``` r
+```{r plot_effect_isolation_fish_SS1, warning=F, dpi=150}
 par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
 
 My_coefplot(c(as.matrix(c(isolation_effect_fish_SS1_30_120[which(TRAITS_SS1$trophic == "Pr")][ab_SS1_pred],
@@ -416,11 +330,9 @@ My_coefplot(c(as.matrix(c(isolation_effect_fish_SS1_120_480[which(TRAITS_SS1$tro
             main = "120 to 480 - SS1", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 2)
 ```
 
-![](Community-Structure_files/figure-gfm/plot_effect_isolation_fish_SS1-1.png)<!-- -->
 
 ### Second Survey
-
-``` r
+```{r mvabund models SS2, cache = T, eval = T}
 fit_SS2_no_effect <- manyglm(com_SS2_mvabund ~  1, family = "negative.binomial")
 fit_SS2_fish <- manyglm(com_SS2_mvabund ~  fish_SS2, family = "negative.binomial")
 fit_SS2_fish_isolation <- manyglm(com_SS2_mvabund ~  fish_SS2+isolation_SS2, family = "negative.binomial")
@@ -428,36 +340,12 @@ fit_SS2_interaction <- manyglm(com_SS2_mvabund ~  fish_SS2*isolation_SS2, family
 
 
 set.seed(3);anova_SS2 <- anova(fit_SS2_interaction, nBoot = 10000,  p.uni  = "none", test = "LR")
-```
-
-    ## Time elapsed: 0 hr 5 min 16 sec
-
-``` r
 anova_SS2
 ```
-
-    ## Analysis of Deviance Table
-    ## 
-    ## Model: com_SS2_mvabund ~ fish_SS2 * isolation_SS2
-    ## 
-    ## Multivariate test:
-    ##                        Res.Df Df.diff   Dev Pr(>Dev)    
-    ## (Intercept)                23                           
-    ## fish_SS2                   22       1 62.28    0.001 ***
-    ## isolation_SS2              20       2 71.81    0.025 *  
-    ## fish_SS2:isolation_SS2     18       2 72.15    0.016 *  
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## Arguments:
-    ##  Test statistics calculated assuming uncorrelated response (for faster computation) 
-    ##  P-value calculated using 10000 iterations via PIT-trap resampling.
-
-Again, we see a significant interaction between isolation and presence
-of fish.
+Again, we see a significant interaction between isolation and presence of fish.
 
 Now, testing if the effect of treatments is mediated by trophic level:
-
-``` r
+```{r mvabund models SS2 trait, cache = T, eval = T}
 fit_SS2_no_trait_interaction <- traitglm(L = com_SS2, R = env_SS2, Q = TRAITS_SS2, formula = ~ isolation_SS2 * fish_SS2, method = "manyglm", col.intercepts = T)
 fit_SS2_trait_pred_interaction <- traitglm(L = com_SS2, R = env_SS2, Q = TRAITS_SS2, formula = ~ (isolation_SS2:trophic) * (fish_SS2:trophic), method = "manyglm", col.intercepts = T)
 
@@ -466,25 +354,10 @@ set.seed(3);anova_SS2_trait_interaction <- anova.traitglm(fit_SS2_no_trait_inter
                                               nBoot = 10000, test = "LR", show.time = "none")
 anova_SS2_trait_interaction
 ```
-
-    ## Analysis of Deviance Table
-    ## 
-    ## Model 1: ~isolation_SS2 * fish_SS2
-    ## Model 2: ~(isolation_SS2:trophic) * (fish_SS2:trophic)
-    ## 
-    ## Multivariate test:
-    ##         Res.Df Df.diff   Dev Pr(>Dev)   
-    ## Model 1    409                          
-    ## Model 2    404       5 33.74    0.002 **
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## Arguments: P-value calculated using 10000 iterations via PIT-trap block resampling.
-
 Yes, it is!
 
 Plotting the ordination.
-
-``` r
+```{r ordination SS2, fig.height=5, fig.width=5, dpi = 150, cache = T}
 fit_gllvm_no_effect_SS2<- gllvm(com_SS2,family = "negative.binomial", method = "VA", row.eff = F,n.init = 50, seed = 3, num.lv = 2)
 
 colors_SS2 <- NULL
@@ -508,15 +381,14 @@ plot_ordination(fit_gllvm_no_effect_SS2, x1 = fish_SS2, x2 = isolation_SS2,
                 site_colors = c("sienna1", "steelblue1","sienna3","steelblue3","sienna4", "steelblue4"),
                 legend = F, legend_labels = c("Fishless - 30 m", "Fishless - 120 m","Fishless - 480 m","Fish - 30 m", "Fish - 120 m","Fish - 480 m"),
                 legend_ncol = 2, legend_horiz = F,species_col = colors_SS2, species_names = new_names_SS2, main = "Second Survey", species_size = TRAITS_SS2$volume_log, name_species_size =  TRAITS_SS2$volume_log*0.21)
-```
 
-![](Community-Structure_files/figure-gfm/ordination%20SS2-1.png)<!-- -->
+
+```
 
 Plotting coefficients and confidence intervals for each species.
 
 First, we compare the effect of fish in each isolation distance.
-
-``` r
+```{r plot_effect_fish_SS2, dpi=150}
 ab_SS2_pred <- order(colSums(com[which(TRAITS$trophic == "Pr")])[which(colSums(com_oc[which(survey == "2"),which(TRAITS$trophic == "Pr")]) > 2)], decreasing = T)
 ab_SS2_cons <- order(colSums(com[which(TRAITS$trophic == "Non_Pred")])[which(colSums(com_oc[which(survey == "2"),which(TRAITS$trophic == "Non_Pred")]) > 2)], decreasing = T)
 
@@ -532,24 +404,7 @@ My_coefplot(c(as.matrix(c(fish_effect_SS2_30[which(TRAITS_SS2$trophic == "Pr")][
                                names(fish_effect_SS2_30[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons])),
             xlab = "Effect on abundance",
             main = "30 m - SS2", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
-```
 
-    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
-    ## zero-length arrow is of indeterminate angle and so skipped
-
-    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
-    ## zero-length arrow is of indeterminate angle and so skipped
-
-    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
-    ## zero-length arrow is of indeterminate angle and so skipped
-
-    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
-    ## zero-length arrow is of indeterminate angle and so skipped
-
-    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
-    ## zero-length arrow is of indeterminate angle and so skipped
-
-``` r
 My_coefplot(c(as.matrix(c(fish_effect_SS2_120[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
                           fish_effect_SS2_120[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
             c(as.matrix(c(fish_effect_SS2_upper_120[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
@@ -560,24 +415,7 @@ My_coefplot(c(as.matrix(c(fish_effect_SS2_120[which(TRAITS_SS2$trophic == "Pr")]
                                names(fish_effect_SS2_120[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons])),
             xlab = "Effect on abundance",
             main = "120 m - SS2", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
-```
 
-    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
-    ## zero-length arrow is of indeterminate angle and so skipped
-
-    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
-    ## zero-length arrow is of indeterminate angle and so skipped
-
-    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
-    ## zero-length arrow is of indeterminate angle and so skipped
-
-    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
-    ## zero-length arrow is of indeterminate angle and so skipped
-
-    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
-    ## zero-length arrow is of indeterminate angle and so skipped
-
-``` r
 My_coefplot(c(as.matrix(c(fish_effect_SS2_480[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
                           fish_effect_SS2_480[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons]))),
             c(as.matrix(c(fish_effect_SS2_upper_480[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
@@ -590,31 +428,8 @@ My_coefplot(c(as.matrix(c(fish_effect_SS2_480[which(TRAITS_SS2$trophic == "Pr")]
             main = "480 m - SS2", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
 ```
 
-    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
-    ## zero-length arrow is of indeterminate angle and so skipped
-
-    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
-    ## zero-length arrow is of indeterminate angle and so skipped
-
-    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
-    ## zero-length arrow is of indeterminate angle and so skipped
-
-    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
-    ## zero-length arrow is of indeterminate angle and so skipped
-
-    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
-    ## zero-length arrow is of indeterminate angle and so skipped
-
-    ## Warning in arrows(y1 = At.y, y0 = At.y, x1 = upper, x0 = lower, code = 3, :
-    ## zero-length arrow is of indeterminate angle and so skipped
-
-![](Community-Structure_files/figure-gfm/plot_effect_fish_SS2-1.png)<!-- -->
-
-Because the effect of treatments on aquatic insects was mediated by
-trophic level, we can assess the same parameters for predators and
-non-predators as a whole.
-
-``` r
+Because the effect of treatments on aquatic insects was mediated by trophic level, we can assess the same parameters for predators and non-predators as a whole.
+```{r plot_effect_fish_SS2_trait, warning=F, fig.height=2, dpi=150}
 par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
 
 My_coefplot(c(as.matrix(rev(trait_fish_30_SS2))),
@@ -639,12 +454,9 @@ My_coefplot(c(as.matrix(rev(trait_fish_480_SS2))),
             main = "480 m - SS2", cex.axis = 0.8, cex.main = 0.8,y_spa = 0.25, rect = T, rect_lim = 1)
 ```
 
-![](Community-Structure_files/figure-gfm/plot_effect_fish_SS2_trait-1.png)<!-- -->
 
-Now, the pairwise effect of isolation for ponds without fish for each
-species.
-
-``` r
+Now, the pairwise effect of isolation for ponds without fish for each species.
+```{r plot_effect_isolation_fishless_SS2, warning=F, dpi=150}
 par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
 
 My_coefplot(c(as.matrix(c(isolation_effect_SS2_30_120[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
@@ -681,13 +493,11 @@ My_coefplot(c(as.matrix(c(isolation_effect_SS2_120_480[which(TRAITS_SS2$trophic 
                                names(isolation_effect_SS2_120_480[which(TRAITS_SS2$trophic == "Non_Pred")][ab_SS2_cons])),
             xlab = "Effect on abundance",
             main = "120 to 480 - SS2", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
+
 ```
 
-![](Community-Structure_files/figure-gfm/plot_effect_isolation_fishless_SS2-1.png)<!-- -->
-
 For trophic level.
-
-``` r
+```{r plot_effect_isolation_fishless_SS2_trait,warning=F, fig.height=2, dpi=150}
 par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
 
 My_coefplot(c(as.matrix(rev(trait_30_120_SS2))),
@@ -710,14 +520,11 @@ My_coefplot(c(as.matrix(rev(trait_120_480_SS2))),
             species_labels = c("Predators", "Non Predators"),
             xlab = NULL,
             main = "120 m to 480 m - SS2", cex.axis = 0.8, cex.main = 0.8,y_spa = 0.25, rect = T, rect_lim = 1)
+
 ```
 
-![](Community-Structure_files/figure-gfm/plot_effect_isolation_fishless_SS2_trait-1.png)<!-- -->
-
-And, the pairwise effect of isolation for ponds with fish for each
-species.
-
-``` r
+And, the pairwise effect of isolation for ponds with fish for each species.
+```{r plot_effect_isolation_fish_SS2,warning=F, dpi=150}
 par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
 
 My_coefplot(c(as.matrix(c(isolation_effect_fish_SS2_30_120[which(TRAITS_SS2$trophic == "Pr")][ab_SS2_pred],
@@ -756,11 +563,8 @@ My_coefplot(c(as.matrix(c(isolation_effect_fish_SS2_120_480[which(TRAITS_SS2$tro
             main = "120 to 480 - SS2", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
 ```
 
-![](Community-Structure_files/figure-gfm/plot_effect_isolation_fish_SS2-1.png)<!-- -->
-
 For trophic level.
-
-``` r
+```{r plot_effect_isolation_fish_SS2_trait,warning=F, fig.height=2, dpi=150}
 par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
 
 My_coefplot(c(as.matrix(rev(trait_30_120_fish_SS2))),
@@ -783,13 +587,12 @@ My_coefplot(c(as.matrix(rev(trait_120_480_fish_SS2))),
             species_labels = c("Predators", "Non Predators"),
             xlab = NULL,
             main = "120 m to 480 m - SS2 - FISH", cex.axis = 0.8, cex.main = 0.8,y_spa = 0.25, rect = T, rect_lim = 1)
+
 ```
 
-![](Community-Structure_files/figure-gfm/plot_effect_isolation_fish_SS2_trait-1.png)<!-- -->
 
 ### Third Survey
-
-``` r
+```{r mvabund models SS3, cache = T, eval = T}
 fit_SS3_no_effect <- manyglm(com_SS3_mvabund ~  1, family = "negative.binomial")
 fit_SS3_fish <- manyglm(com_SS3_mvabund ~  fish_SS3, family = "negative.binomial")
 fit_SS3_fish_isolation <- manyglm(com_SS3_mvabund ~  fish_SS3+isolation_SS3, family = "negative.binomial")
@@ -797,42 +600,13 @@ fit_SS3_interaction <- manyglm(com_SS3_mvabund ~  fish_SS3*isolation_SS3, family
 
 
 set.seed(3);anova_SS3 <- anova(fit_SS3_interaction, nBoot = 10000,  p.uni  = "none", test = "LR")
-```
-
-    ## Time elapsed: 0 hr 4 min 57 sec
-
-``` r
 anova_SS3
 ```
-
-    ## Analysis of Deviance Table
-    ## 
-    ## Model: com_SS3_mvabund ~ fish_SS3 * isolation_SS3
-    ## 
-    ## Multivariate test:
-    ##                        Res.Df Df.diff   Dev Pr(>Dev)  
-    ## (Intercept)                19                         
-    ## fish_SS3                   18       1 49.09    0.018 *
-    ## isolation_SS3              16       2 72.96    0.055 .
-    ## fish_SS3:isolation_SS3     14       2 91.12    0.015 *
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## Arguments:
-    ##  Test statistics calculated assuming uncorrelated response (for faster computation) 
-    ##  P-value calculated using 10000 iterations via PIT-trap resampling.
-
-Again, we see a significant interaction between isolation and presence
-of fish.
+Again, we see a significant interaction between isolation and presence of fish.
 
 Now, testing if the effect of treatments is mediated by trophic level:
-
-``` r
+```{r mvabund models SS3 trait, cache = T, eval = T}
 fit_SS3_no_trait_interaction <- traitglm(L = com_SS3, R = env_SS3, formula = ~ isolation_SS3 * fish_SS3, method = "manyglm", col.intercepts = T)
-```
-
-    ## No traits matrix entered, so will fit SDMs with different env response for each spp
-
-``` r
 fit_SS3_trait_pred_interaction <- traitglm(L = com_SS3, R = env_SS3, Q = TRAITS_SS3, formula = ~ (isolation_SS3:trophic) * (fish_SS3:trophic), method = "manyglm", col.intercepts = T)
 
 set.seed(3);anova_SS3_trait_interaction <- anova(fit_SS3_no_trait_interaction,
@@ -840,25 +614,10 @@ set.seed(3);anova_SS3_trait_interaction <- anova(fit_SS3_no_trait_interaction,
                                               nBoot = 10000, test = "LR", show.time = "none")
 anova_SS3_trait_interaction
 ```
-
-    ## Analysis of Deviance Table
-    ## 
-    ## Model 1: ~isolation_SS3 * fish_SS3
-    ## Model 2: ~(isolation_SS3:trophic) * (fish_SS3:trophic)
-    ## 
-    ## Multivariate test:
-    ##         Res.Df Df.diff   Dev Pr(>Dev)  
-    ## Model 1    337                         
-    ## Model 2    332       5 33.71    0.032 *
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## Arguments: P-value calculated using 10000 iterations via PIT-trap block resampling.
-
 Yes! it is!
 
 Plotting the ordination.
-
-``` r
+```{r ordination SS3, fig.height=5, fig.width=5, dpi = 150, cache = T}
 fit_gllvm_no_effect_SS3<- gllvm(com_SS3,family = "negative.binomial", method = "VA", row.eff = F,n.init = 50, seed = 3, num.lv = 2)
 
 colors_SS3 <- NULL
@@ -882,15 +641,13 @@ plot_ordination(fit_gllvm_no_effect_SS3, x1 = fish_SS3, x2 = isolation_SS3,
                 site_colors = c("sienna1", "steelblue1","sienna3","steelblue3","sienna4", "steelblue4"),
                 legend = F, legend_labels = c("Fishless - 30 m", "Fishless - 120 m","Fishless - 480 m","Fish - 30 m", "Fish - 120 m","Fish - 480 m"),
                 legend_ncol = 2, legend_horiz = F,species_col = colors_SS3, species_names = new_names_SS3, main = "Third Survey", species_size = TRAITS_SS3$volume_log, name_species_size =  TRAITS_SS3$volume_log*0.21, plot_centroid_dist = TRUE)
-```
 
-![](Community-Structure_files/figure-gfm/ordination%20SS3-1.png)<!-- -->
+```
 
 Plotting coefficients and confidence intervals for each species.
 
 First, we compare the effect of fish in each isolation distance.
-
-``` r
+```{r plot_effect_fish_SS3, warning=F, dpi=150}
 ab_SS3_pred <- order(colSums(com[which(TRAITS$trophic == "Pr")])[which(colSums(com_oc[which(survey == "3"),which(TRAITS$trophic == "Pr")]) > 2)], decreasing = T)
 ab_SS3_cons <- order(colSums(com[which(TRAITS$trophic == "Non_Pred")])[which(colSums(com_oc[which(survey == "3"),which(TRAITS$trophic == "Non_Pred")]) > 2)], decreasing = T)
 
@@ -928,15 +685,11 @@ My_coefplot(c(as.matrix(c(fish_effect_SS3_480[which(TRAITS_SS3$trophic == "Pr")]
                                names(fish_effect_SS3_480[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons])),
             xlab = "Effect on abundance",
             main = "480 m - SS2", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
+
 ```
 
-![](Community-Structure_files/figure-gfm/plot_effect_fish_SS3-1.png)<!-- -->
-
-Because the effect of treatments on aquatic insects was mediated by
-trophic level, we can assess the same parameters for predators and
-non-predators as a whole.
-
-``` r
+Because the effect of treatments on aquatic insects was mediated by trophic level, we can assess the same parameters for predators and non-predators as a whole.
+```{r plot_effect_fish_SS3_trait, warning=F, fig.height=2, dpi=150}
 par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
 
 My_coefplot(c(as.matrix(rev(trait_fish_30_SS3))),
@@ -959,14 +712,12 @@ My_coefplot(c(as.matrix(rev(trait_fish_480_SS3))),
             species_labels = c("Predators", "Non Predators"),
             xlab = NULL,
             main = "30 m - SS2", cex.axis = 0.8, cex.main = 0.8,y_spa = 0.25, rect = T, rect_lim = 1)
+
 ```
 
-![](Community-Structure_files/figure-gfm/plot_effect_fish_SS3_trait-1.png)<!-- -->
 
-Now, the pairwise effect of isolation for ponds without fish for each
-species.
-
-``` r
+Now, the pairwise effect of isolation for ponds without fish for each species.
+```{r plot_effect_isolation_fishless_SS3, warning=F, dpi=150}
 par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
 
 My_coefplot(c(as.matrix(c(isolation_effect_SS3_30_120[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
@@ -1003,13 +754,11 @@ My_coefplot(c(as.matrix(c(isolation_effect_SS3_120_480[which(TRAITS_SS3$trophic 
                                names(isolation_effect_SS3_120_480[which(TRAITS_SS3$trophic == "Non_Pred")][ab_SS3_cons])),
             xlab = "Effect on abundance",
             main = "120 to 480 - SS2", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
+
 ```
 
-![](Community-Structure_files/figure-gfm/plot_effect_isolation_fishless_SS3-1.png)<!-- -->
-
 For trophic level.
-
-``` r
+```{r plot_effect_isolation_fishless_SS3_trait,warning=F, fig.height=2, dpi=150}
 par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
 
 My_coefplot(c(as.matrix(rev(trait_30_120_SS3))),
@@ -1032,14 +781,11 @@ My_coefplot(c(as.matrix(rev(trait_120_480_SS3))),
             species_labels = c("Predators", "Non Predators"),
             xlab = NULL,
             main = "120 m to 480 m - SS3", cex.axis = 0.8, cex.main = 0.8, y_spa = 0.25, rect = T, rect_lim = 1)
+
 ```
 
-![](Community-Structure_files/figure-gfm/plot_effect_isolation_fishless_SS3_trait-1.png)<!-- -->
-
-And, the pairwise effect of isolation for ponds with fish for each
-species.
-
-``` r
+And, the pairwise effect of isolation for ponds with fish for each species.
+```{r plot_effect_isolation_fish_SS3,warning=F, dpi=150}
 par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
 
 My_coefplot(c(as.matrix(c(isolation_effect_fish_SS3_30_120[which(TRAITS_SS3$trophic == "Pr")][ab_SS3_pred],
@@ -1078,11 +824,8 @@ My_coefplot(c(as.matrix(c(isolation_effect_fish_SS3_120_480[which(TRAITS_SS3$tro
             main = "120 to 480 - SS3", cex.axis = 0.8, cex.main = 0.8, rect = T, rect_lim = 6)
 ```
 
-![](Community-Structure_files/figure-gfm/plot_effect_isolation_fish_SS3-1.png)<!-- -->
-
 For trophic level.
-
-``` r
+```{r plot_effect_isolation_fish_SS3_trait,warning=F, fig.height=2, dpi=150}
 par(mfrow = c(1,3), mar = c(5, 5, 4, 2) + 0.1)
 
 My_coefplot(c(as.matrix(rev(trait_30_120_fish_SS3))),
@@ -1105,113 +848,51 @@ My_coefplot(c(as.matrix(rev(trait_120_480_fish_SS3))),
             species_labels = c("Predators", "Non Predators"),
             xlab = NULL,
             main = "120 m to 480 m - SS3 - FISH", cex.axis = 0.8, cex.main = 0.8, y_spa = 0.25, rect = T, rect_lim = 1)
+
 ```
 
-![](Community-Structure_files/figure-gfm/plot_effect_isolation_fish_SS3_trait-1.png)<!-- -->
+
+
 
 ## Testing for differences in distances of centroids of fish and fishless treatments in different isolation treatments.
 
-Here we will use a the function `Dif_dist()` to compute the distances
-between the centroids of fish and fishless treatments in each isolation
-treatment from the unconstrained ordination done by the `gllvm` function
-from package `gllvm`. Then, we compute the differences among the
-distances between the different distances and assess significance by
-permuting rows of the matrix always within fish and fishless treatments.
-By doing that we keep the mean differences among ponds with and without
-fish, but randomize any differences in the effect of fish across the
-isolation gradient.
+Here we will use a the function `Dif_dist()` to compute the distances between the centroids of fish and fishless treatments in each isolation treatment from the unconstrained ordination done by the `gllvm` function from package `gllvm`. Then, we compute the differences among the distances between the different distances and assess significance by permuting rows of the matrix always within fish and fishless treatments. By doing that we keep the mean differences among ponds with and without fish, but randomize any differences in the effect of fish across the isolation gradient.
 
 ### First Survey
-
-``` r
+```{r Dif_dist First Survey, cache=T}
 #Excluding samples for balanced design
 set.seed(3)
 Dif_dist_SS1<- Dif_dist(com = com_SS1, x1 = fish_SS1, x2 = isolation_SS1, nperm = 10000, family = "negative.binomial", num.lv = 2, strata = T, show.perm = F, orig_n.init = 20, perm_n.init = 1, type = "centroid", method = "VA", refit_perm = F)
-```
 
-    ## Starting 20 initial runs of the original GLLVM fit
-
-    ## Original GLLVM fit finished
-
-    ## Starting Permutations
-
-    ## FINISHED
-
-``` r
 Dif_dist_SS1$distances
-```
-
-    ##         30m     120m      480m
-    ## 1 0.6891425 1.099904 0.7301238
-
-``` r
 Dif_dist_SS1$diferences
-```
-
-    ##   30 -> 120 120 -> 480  30 -> 480
-    ## 1 0.4107614 -0.3697801 0.04098132
-
-``` r
 Dif_dist_SS1$p.values
 ```
 
-    ##                            30 -> 120 120 -> 480 30 -> 480
-    ## Greater                      0.26350    0.71510    0.4769
-    ## Greater (Adjusted - FDR)     0.71510    0.71510    0.7151
-    ## Lower                        0.73650    0.28490    0.5231
-    ## Lower (Adjusted - FDR)       0.73650    0.73650    0.7365
-    ## Two sided                    0.51960    0.56350    0.9501
-    ## Two sided (Adjusted - FDR)   0.84525    0.84525    0.9501
-
 ### Second Survey
-
-``` r
+```{r Dif_dist Second Survey, cache=T}
 #Excluding samples for balanced design
 set.seed(3)
 Dif_dist_SS2<- Dif_dist(com = com_SS2, x1 = fish_SS2, x2 = isolation_SS1, nperm = 10000, family = "negative.binomial", num.lv = 2, strata = T, show.perm = F, orig_n.init = 20, perm_n.init = 1, type = "centroid", method = "VA", refit_perm = F)
-```
 
-    ## Starting 20 initial runs of the original GLLVM fit
-
-    ## Original GLLVM fit finished
-
-    ## Starting Permutations
-
-    ## FINISHED
-
-``` r
 Dif_dist_SS2$distances
-```
-
-    ##        30m    120m     480m
-    ## 1 1.327957 1.60427 1.331215
-
-``` r
 Dif_dist_SS2$diferences
-```
-
-    ##   30 -> 120 120 -> 480   30 -> 480
-    ## 1  0.276313 -0.2730546 0.003258477
-
-``` r
 Dif_dist_SS2$p.values
 ```
 
-    ##                            30 -> 120 120 -> 480 30 -> 480
-    ## Greater                       0.3278     0.6820    0.4908
-    ## Greater (Adjusted - FDR)      0.6820     0.6820    0.6820
-    ## Lower                         0.6722     0.3180    0.5092
-    ## Lower (Adjusted - FDR)        0.6722     0.6722    0.6722
-    ## Two sided                     0.6528     0.6562    0.9948
-    ## Two sided (Adjusted - FDR)    0.9843     0.9843    0.9948
-
 ### Third Survey
+```{r Dif_dist Third Survey, cache=T}
+#Excluding samples for balanced design
+set.seed(3)
+Dif_dist_SS3_orig<- Dif_dist(com = com_SS3, x1 = fish_SS3, x2 = isolation_SS3, family = "negative.binomial", num.lv = 2, test = FALSE, orig_n.init = 20, type = "centroid", method = "VA")
 
-Here, again we had to exclude two ponds from the 30 and 120 isolation
-treatments to achieve a balanced design. We randomly selected one
-fishless pond from the 30m and 120m isolation treatments to be excluded.
+Dif_dist_SS3_orig$distances
+Dif_dist_SS3_orig$diferences
+```
 
-``` r
+
+To actually test for significance here we had to randomly exclude one fishless pond from the 30m distance and one from the 120m distance to achieve a balanced design.
+```{r Dif_dist Third, cache=TRUE, warning=FALSE, message=FALSE}
 set.seed(1)
 first <- sample(row(com_SS3)[which(fish_SS3=="absent" & isolation_SS3 == "30")], size = 1)
 second <- sample(row(com_SS3)[which(fish_SS3=="absent" & isolation_SS3 == "120")], size = 1)
@@ -1220,63 +901,15 @@ fish_SS3_incomplete <- fish_SS3[-c(first,second)]
 isolation_SS3_incomplete <- isolation_SS3[-c(first,second)]
 
 set.seed(1)
-Dif_dist_SS3<- Dif_dist(com = com_SS3_incomplete, x1 = fish_SS3_incomplete,x2 = isolation_SS3_incomplete,nperm = 1000, family = "negative.binomial", num.lv = 2, strata = T, show.perm = F, orig_n.init = 20, perm_n.init = 1, type = "centroid", method = "VA", refit_perm = F)
+Dif_dist_SS3<- Dif_dist(com = com_SS3_incomplete, x1 = fish_SS3_incomplete,x2 = isolation_SS3_incomplete,nperm = 10000, family = "negative.binomial", num.lv = 2, strata = T, show.perm = F, orig_n.init = 20, perm_n.init = 1, type = "centroid", method = "VA", refit_perm = F)
 
-Dif_dist_SS3$distances
-```
-
-    ##         30m    120m    480m
-    ## 1 0.5232925 1.77442 2.15108
-
-``` r
-Dif_dist_SS3$diferences
-```
-
-    ##   30 -> 120 120 -> 480 30 -> 480
-    ## 1  1.251128    0.37666  1.627788
-
-``` r
 Dif_dist_SS3$p.values
 ```
 
-    ##                            30 -> 120 120 -> 480 30 -> 480
-    ## Greater                       0.0340      0.281     0.006
-    ## Greater (Adjusted - FDR)      0.0510      0.281     0.018
-    ## Lower                         0.9660      0.719     0.994
-    ## Lower (Adjusted - FDR)        0.9940      0.994     0.994
-    ## Two sided                     0.0690      0.589     0.007
-    ## Two sided (Adjusted - FDR)    0.1035      0.589     0.021
 
-We can check if our permutation procedure is working by using the
-`plot_null` function to plot some of the null communities generated by
-`Dif_dist()`. This is an example of the first 15 permutations for the
-third survey:
+The p-values we got for the differences between centroids are valid for a specific combination of 3 out of 4 fishless ponds in 30 and 120 m distances. We can check what is the proportion of times that the difference between fish and fishless ponds is significantly greater in more isolated ponds when compared to the lowest isolation treatment (30m VS 480m) for all possible combinations. So we ran the previous analysis 1000 times (this is very time consuming).
 
-``` r
-set.seed(1)
-par(mfrow = c(4,4))
-plot_null(com_SS3_incomplete, nperm = 15 ,x1 = fish_SS3_incomplete, x2 = isolation_SS3_incomplete,
-          family = "negative.binomial", strata = T, orig_n.init = 10, xlim = c(-2.5,2.5), ylim = c(-2.5,2.5), 
-          refit_perm = F, elipse = T, site_colors = c("sienna1", "steelblue1","sienna3","steelblue3","sienna4", "steelblue4"))
-```
-
-    ## [1] "Starting 10 initial runs of the original GLLVM fit"
-    ## [1] "Original GLLVM fit finished"
-
-![](Community-Structure_files/figure-gfm/plot%20null-1.png)<!-- --> It
-seems like everything is ok.
-
-The p-values we got for the differences between centroids are valid for
-a specific combination of 3 out of 4 fishless ponds in 30 and 120 m
-distances. I had to do that to achieve a balanced design. We can check
-what is the proportion of times that the difference between fish and
-fishless ponds is significantly greater in more isolated ponds when
-compared to the lowest isolated (30m VS 480m) for all possible
-combinations. So we run the previous analysis again 1000 times (this is
-very time consuming) with different with different combinations of 3 out
-of 4 fishless ponds in 30 and 120 m distances.
-
-``` r
+```{r Dif_dist_1000_times, cache=TRUE, message=FALSE, warning=FALSE}
 #Excluding samples for balanced design
 set.seed(1)
 
@@ -1296,7 +929,7 @@ for(i in 1:1000){
   fish_SS3_incomplete <- fish_SS3[-c(first[i],second[i])]
   isolation_SS3_incomplete <- isolation_SS3[-c(first[i],second[i])]
   
-  Dif_dist_SS3<- Dif_dist(com = com_SS3_incomplete, x1 = fish_SS3_incomplete,x2 = isolation_SS3_incomplete,nperm = 10000, family = "negative.binomial", num.lv = 2, strata = T, show.perm = F, orig_n.init = 10, perm_n.init = 1, type = "centroid", method = "VA", refit_perm = F)
+  Dif_dist_SS3<- Dif_dist(com = com_SS3_incomplete, x1 = fish_SS3_incomplete,x2 = isolation_SS3_incomplete,nperm = 1000, family = "negative.binomial", num.lv = 2, strata = T, show.perm = F, orig_n.init = 10, perm_n.init = 1, type = "centroid", method = "VA", refit_perm = F)
   
   dists_prop_SS3[,,i] <- Dif_dist_SS3$p.values
   dists_SS3[i,] <- c(as.matrix(Dif_dist_SS3$diferences))
@@ -1304,24 +937,28 @@ for(i in 1:1000){
 }
 ```
 
-``` r
+
+```{r proportions_Third, cache=T}
 #Proportion of Greater
-length(dists_SS3[,3][dists_SS3[1,3] > 0]) / length(dists_SS3[,3])
-```
-
-    ## [1] 1
-
-``` r
+length(dists_SS3[,3][dists_SS3[,3] > 0]) / length(dists_SS3[,3])
 length(dists_prop_SS3[1,3,][dists_prop_SS3[1,3,] < 0.05]) / length(dists_prop_SS3[1,3,])
-```
 
-    ## [1] 0.64
 
-``` r
 ############################################
 ```
 
-In 95% of cases the difference between fish and fishless ponds was
-greater in the 480m distance, if compared to the 30m distance. Also,
-this difference was significantly greater in isolated ponds for 75% of
-these different combinations.
+In 95% of the cases the difference between fish and fishless ponds was greater in the 480m distance, if compared to the 30m distance. Also, this difference was significantly greater in isolated ponds in 64% of these cases.
+
+
+
+
+We can check if our permutation procedure is working by using the `plot_null` function to plot some of the null communities generated by  `Dif_dist()`. This is an example of the first 15 permutations for the third survey:
+```{r plot null, fig.height=10, fig.width=10, dpi = 150}
+set.seed(1)
+par(mfrow = c(4,4))
+plot_null(com_SS3_incomplete, nperm = 15 ,x1 = fish_SS3_incomplete, x2 = isolation_SS3_incomplete,
+          family = "negative.binomial", strata = T, orig_n.init = 10, xlim = c(-2.5,2.5), ylim = c(-2.5,2.5), 
+          refit_perm = F, elipse = T, site_colors = c("sienna1", "steelblue1","sienna3","steelblue3","sienna4", "steelblue4"))
+```
+It seems like everything is ok.
+

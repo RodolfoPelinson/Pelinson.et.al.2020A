@@ -1314,7 +1314,7 @@ length(dists_prop_SS3[1,3,][dists_prop_SS3[1,3,] < 0.05 & dists_SS3[,3] > 0]) / 
 
 In 94% of the cases the difference between fish and fishless ponds was
 greater in the 480m distance, if compared to the 30m distance. Also,
-this difference was significantly greater in isolated ponds in 78% of
+this difference was significantly greater in isolated ponds in 80% of
 these cases.
 
 We can check if our permutation procedure is working by using the

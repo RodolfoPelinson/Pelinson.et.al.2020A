@@ -1,0 +1,34 @@
+This data was collected from a mesocosm experiment to assess the influence of fish presence, spatial isolation, and their interaction on aquatic insects' community assembly.  We conducted three sampling surveys of the artificial ponds after ~3 weeks, ~8 weeks, and ~12 weeks of the beginning of the experiment. The experiment ran from 18-Jan-2017 to 24-Apr-2017.
+
+The experiment followed a fully factorial design crossing fish presence (presence/absence) with spatial isolation (three levels of isolation). The isolation treatment was achieved by establishing 8 artificial ponds along each of three parallel transects 30m, 120m, and 480m from a source wetland consisting of a stream and its marshy floodplain.  The distance between adjacent artificial ponds was 30 m. Fish treatments (presence vs. absence) were randomly assigned to ponds within each of the three parallel transects. Each fish-by-distance treatment was replicated four times for a total of 24 artificial ponds. Artificial ponds were naturally colonized by organisms dispersing in the landscape including phytoplankton, zooplankton, and macroinvertebrates.
+
+Experimental units consisted of ~1,200L artificial ponds dug into the ground and lined with a 0.5 mm thick, high-density polyethylene geomembrane to retain water. Each pond was 4 m long, 1m wide, and 40 cm deep. Walls were vertical along the length of the pond; a 1 m-long ramp terminating at ground level at each short side of the pond provided shallow microhabitats for freshwater organisms. Two roof tiles were placed at the waterline in each of the short sides to provide shelter and/or oviposition habitat. Three 30 cm-long, 10 cm-wide PVC pipes were placed in the water to provide shelter for fishes.
+
+Aquatic insects were sampled by a standardized procedure consisted of thoroughly dipnetting the entire water column and benthos of half of the pond two times with a rectangular hand net (20 cm x 18 cm; 1.5 mm mesh size). Aquatic insects were cleaned of debris and stored in 70% ethanol. In the laboratory, they were identified and counted to the lowest reliable taxonomical level using taxonomic keys for South American freshwater insects.
+
+
+
+_____________________________________________________________________
+community_data.csv: Information about the communities and treatments
+
+pond_ID: Code ID of each pond
+survey: Each of the three surveys
+lat and long: Geographical coordinates of the ponds
+fish: fish treatment, either fish ‘present’ or ‘absent’
+isolation: one of the three isolation distances, 30, 120, or 480m.
+Other columns: taxa abundances. The headings of the columns match the ‘species’ column in the traits.csv file. 
+
+We had to exclude samples from four ponds in the third survey due to mislabeling. Those were ponds A4, B3, C3, and C4. Therefore the abundances in these ponds are "NA" in the data matrix.
+
+_____________________________________________________________________
+traits.csv: Information about the sampled species. More information is provided in the supplementary material of the paper (Appendix S5).
+
+species: taxa ID matching the names of the species in the community matrix.
+trophic: Trophic level treatment: Either pred (Predators) and non_pred (Herbivores and Detritivores).
+volume: volume of the largest individual sampled from each taxon.
+family: Taxonomic family of each sampled taxa.
+order: Taxonomic order of each sampled taxa.
+total_ab: Total abundance of each taxa considering all surveys.
+total_ab_survey1: Total abundance of each taxon considering the first survey.
+total_ab_survey2: Total abundance of each taxon considering the second survey.
+total_ab_survey3: Total abundance of each taxon considering the third survey.

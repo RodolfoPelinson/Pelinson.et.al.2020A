@@ -11,8 +11,8 @@
 The goal of `PredatorIsolationComm` is to walk the user through the
 statistical analysis presented in:  
 **“Pelinson et al 2021. Top predator introduction changes the effects of
-spatial isolation on freshwater community structure”**  
-DOI: <https://doi.org/10.1101/857318>
+spatial isolation on freshwater community structure”** (DOI:
+<https://doi.org/10.1101/857318>)
 
 The analyses were divided in three different sections:
 
